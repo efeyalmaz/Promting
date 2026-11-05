@@ -1,549 +1,1407 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prompt Engineering & LLM Mastery Lab</title>
-  <meta property="og:title" content="Prompt Engineering & LLM Mastery Lab">
-  <meta property="og:description" content="An elegant, interactive handbook exploring prompt engineering, LLM mechanics, and RAG architectures with live simulators.">
+  <title>Introduction to Prompt Engineering — Interactive AI Masterclass</title>
+  <meta property="og:title" content="Introduction to Prompt Engineering — Interactive AI Lab">
+  <meta property="og:description" content="An illustrated, interactive masterclass on language models, attention, chat roles, RAG pipelines, and hands-on prompt engineering.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-gradient: radial-gradient(circle at 10% 20%, rgba(30, 27, 75, 0.7) 0%, rgba(10, 14, 26, 1) 90%);
-      --card-bg: rgba(22, 27, 46, 0.7);
-      --card-border: rgba(99, 102, 241, 0.25);
-      --card-hover: rgba(99, 102, 241, 0.4);
-      --primary-cyan: #38bdf8;
-      --primary-purple: #a855f7;
-      --primary-pink: #ec4899;
-      --primary-emerald: #10b981;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --code-bg: #090d16;
-      --sidebar-width: 320px;
+    /* ================= THEME VARIABLES (DARK & LIGHT MODE) ================= */
+    :root[data-theme="dark"] {
+      --bg-main: #060913;
+      --bg-secondary: #0d1326;
+      --bg-card: rgba(17, 25, 48, 0.72);
+      --bg-interactive: rgba(10, 15, 30, 0.88);
+      --bg-code: #050811;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: rgba(99, 102, 241, 0.22);
+      --border-hover: rgba(56, 189, 248, 0.5);
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-tertiary: #f472b6;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --nav-bg: rgba(6, 9, 19, 0.82);
+      --shadow-main: 0 20px 50px rgba(0, 0, 0, 0.55);
+      --blob-opacity: 0.22;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+    :root[data-theme="light"] {
+      --bg-main: #f8fafc;
+      --bg-secondary: #eef2ff;
+      --bg-card: rgba(255, 255, 255, 0.88);
+      --bg-interactive: #f1f5f9;
+      --bg-code: #0f172a;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --border-color: rgba(99, 102, 241, 0.2);
+      --border-hover: rgba(79, 70, 229, 0.55);
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-tertiary: #db2777;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --nav-bg: rgba(255, 255, 255, 0.85);
+      --shadow-main: 0 15px 35px rgba(15, 23, 42, 0.08);
+      --blob-opacity: 0.12;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-      background: #070a12;
-      background-image: var(--bg-gradient);
-      background-attachment: fixed;
-      color: var(--text-main);
-      display: flex;
-      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
       line-height: 1.7;
+      overflow-x: hidden;
+      transition: background-color 0.35s ease, color 0.35s ease;
     }
 
-    /* Sol Menü - Glassmorphism */
-    aside {
-      width: var(--sidebar-width);
-      background: rgba(13, 17, 30, 0.75);
-      backdrop-filter: blur(16px);
-      border-right: 1px solid var(--card-border);
+    /* Animated Ambient Background Blobs */
+    .ambient-bg {
       position: fixed;
-      height: 100vh;
-      overflow-y: auto;
-      padding: 2rem 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      z-index: 100;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(110px);
+      opacity: var(--blob-opacity);
+      animation: floatBlob 18s infinite alternate ease-in-out;
+    }
+    .blob-1 { width: 550px; height: 550px; background: #38bdf8; top: -120px; left: -100px; }
+    .blob-2 { width: 600px; height: 600px; background: #818cf8; top: 35%; right: -150px; animation-delay: -5s; }
+    .blob-3 { width: 500px; height: 500px; background: #f472b6; bottom: -120px; left: 20%; animation-delay: -10s; }
+
+    @keyframes floatBlob {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, -40px) scale(1.1); }
     }
 
-    .brand-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 1.5rem;
+    /* Scroll Progress Bar */
+    .progress-bar-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+      width: 0%;
+      z-index: 9999;
+      transition: width 0.1s linear;
+    }
+
+    /* ================= STICKY TOP NAVBAR ================= */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 2rem;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 800;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.45rem 0.8rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .nav-links a:hover {
+      color: var(--accent-primary);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 0.95rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .ctrl-btn:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    /* ================= HERO SECTION ================= */
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3.5rem 1rem 3rem;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-    }
-
-    aside h3 {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--primary-pink);
-      margin: 1rem 0 0.4rem 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
       font-weight: 700;
-    }
-
-    aside a {
-      color: var(--text-muted);
-      text-decoration: none;
-      padding: 0.65rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      font-weight: 500;
-      transition: all 0.25s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      border: 1px solid transparent;
-    }
-
-    aside a:hover {
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), rgba(168, 85, 247, 0.1));
-      color: var(--primary-cyan);
-      border-color: rgba(56, 189, 248, 0.3);
-      transform: translateX(4px);
-    }
-
-    /* Ana İçerik */
-    main {
-      margin-left: var(--sidebar-width);
-      flex: 1;
-      padding: 3.5rem 5rem;
-      max-width: 1050px;
-    }
-
-    header {
-      margin-bottom: 3.5rem;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: 2.5rem;
-    }
-
-    .badge-pill {
-      display: inline-block;
-      padding: 0.3rem 0.9rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
       text-transform: uppercase;
-      background: rgba(168, 85, 247, 0.15);
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      color: #c084fc;
-      margin-bottom: 1rem;
+      letter-spacing: 0.06em;
+      background: rgba(99, 102, 241, 0.14);
+      border: 1px solid var(--border-color);
+      color: var(--accent-primary);
+      margin-bottom: 1.2rem;
     }
-
-    header h1 {
-      font-size: 3.2rem;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #ec4899 100%);
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.8rem;
-      line-height: 1.2;
+    }
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 760px;
+      margin: 0 auto 2rem;
     }
 
-    header p {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      max-width: 750px;
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      max-width: 860px;
+      margin: 0 auto;
     }
-
-    /* Kartlar */
-    section {
-      background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--card-border);
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
       border-radius: 16px;
+      padding: 1.1rem;
+      backdrop-filter: blur(12px);
+    }
+    .stat-num {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--accent-primary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* ================= MODULE SECTIONS ================= */
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
       padding: 2.5rem;
       margin-bottom: 3rem;
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-      transition: border-color 0.3s ease;
+      box-shadow: var(--shadow-main);
+      backdrop-filter: blur(16px);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .module-card:hover {
+      border-color: var(--border-hover);
     }
 
-    section:hover {
-      border-color: var(--card-hover);
-    }
-
-    section h2 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 1.25rem;
+    .module-header {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      padding-bottom: 0.8rem;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .module-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2));
+      color: var(--accent-primary);
+      border: 1px solid var(--border-color);
+    }
+    .module-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-primary);
     }
 
-    section h3 {
-      font-size: 1.25rem;
-      color: var(--primary-cyan);
-      margin: 1.5rem 0 0.6rem 0;
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.2rem;
+      margin: 1.5rem 0;
     }
-
-    p { margin-bottom: 1.1rem; color: #cbd5e1; font-size: 1.02rem; }
-    ul { margin: 0 0 1.5rem 1.8rem; color: #cbd5e1; }
-    li { margin-bottom: 0.5rem; }
-
-    /* İnteraktif Simülatör Kartı */
-    .interactive-card {
-      background: linear-gradient(180deg, rgba(17, 24, 39, 0.8) 0%, rgba(9, 13, 22, 0.9) 100%);
-      border: 1px solid rgba(168, 85, 247, 0.3);
-      border-radius: 14px;
-      padding: 1.8rem;
-      margin: 1.75rem 0;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    .concept-box {
+      background: var(--bg-interactive);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.3rem;
     }
-
-    .interactive-card h4 {
-      font-size: 1.15rem;
-      color: #f1f5f9;
+    .concept-box h4 {
+      color: var(--accent-primary);
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin-bottom: 0.5rem;
+    }
+    .concept-box p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
     }
 
-    /* Slider Stilleri */
-    .slider-row {
+    /* ================= INTERACTIVE LAB CONTAINERS ================= */
+    .lab-box {
+      background: var(--bg-interactive);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.8rem;
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .lab-header {
       display: flex;
       align-items: center;
-      gap: 1.5rem;
-      margin: 1.2rem 0;
-    }
-
-    .slider-row input[type="range"] {
-      flex: 1;
-      height: 8px;
-      border-radius: 4px;
-      background: #1e293b;
-      accent-color: var(--primary-purple);
-      cursor: pointer;
-    }
-
-    .badge-val {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
-      border: 1px solid var(--primary-purple);
-      color: #e0e7ff;
-      font-weight: 700;
-      padding: 0.35rem 0.85rem;
-      border-radius: 8px;
-      min-width: 65px;
-      text-align: center;
-      font-family: monospace;
-      font-size: 1.05rem;
-    }
-
-    /* Çıktı Kutuları */
-    .output-box {
-      background: var(--code-bg);
-      border-left: 4px solid var(--primary-cyan);
-      border-radius: 0 10px 10px 0;
-      padding: 1.25rem;
-      margin-top: 1.2rem;
-      font-size: 0.95rem;
-      color: #e2e8f0;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      border-right: 1px solid rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-
-    /* Buton Grupları */
-    .btn-group {
-      display: flex;
+      justify-content: space-between;
       flex-wrap: wrap;
       gap: 0.8rem;
-      margin: 1.2rem 0;
+      margin-bottom: 1.2rem;
+    }
+    .lab-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .live-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 12px var(--accent-emerald);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
     }
 
-    .btn {
-      background: #1e2433;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #f8fafc;
-      padding: 0.65rem 1.2rem;
-      border-radius: 8px;
+    /* Buttons & Pills */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+    .ui-btn {
+      padding: 0.6rem 1.1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 0.92rem;
-      font-weight: 600;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
     }
-
-    .btn:hover {
-      background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
-      color: #050811;
-      border-color: transparent;
+    .ui-btn:hover {
+      border-color: var(--accent-primary);
       transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
     }
-
-    .btn.active {
-      background: linear-gradient(135deg, var(--primary-purple), var(--primary-pink));
-      color: #ffffff;
+    .ui-btn.active {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
       border-color: transparent;
-      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
     }
 
-    code {
+    /* Sliders */
+    .slider-group {
+      margin: 1.1rem 0;
+    }
+    .slider-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+    .val-pill {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-primary);
+      padding: 0.2rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.25);
+      accent-color: var(--accent-primary);
+      cursor: pointer;
+    }
+
+    /* Terminal / Output Box */
+    .terminal {
+      background: var(--bg-code);
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      padding: 1.25rem;
+      border-radius: 14px;
+      border-left: 4px solid var(--accent-primary);
+      margin-top: 1rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    /* Probability Bars (Module 2) */
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 0.55rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+    .prob-token {
+      width: 120px;
+      font-weight: 700;
+    }
+    .prob-track {
+      flex: 1;
+      height: 14px;
       background: rgba(148, 163, 184, 0.15);
-      padding: 0.2rem 0.5rem;
-      border-radius: 5px;
-      color: var(--primary-cyan);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.88em;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .prob-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 999px;
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .prob-pct {
+      width: 55px;
+      text-align: right;
+      color: var(--accent-primary);
+      font-weight: 700;
     }
 
-    @media (max-width: 900px) {
-      body { flex-direction: column; }
-      aside { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--card-border); }
-      main { margin-left: 0; padding: 2rem 1.5rem; }
+    /* Meter Bars */
+    .meter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+    .meter-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 1rem;
+      border-radius: 12px;
+    }
+    .meter-title {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .meter-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 1rem;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 0.8rem 1rem; }
+      .module-card { padding: 1.5rem; }
+      .nav-links { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Sol Menü -->
-  <aside>
-    <div class="brand-title">
-      <span>⚡</span> Prompt Engineering
+  <div class="progress-bar-top" id="scrollProgress"></div>
+
+  <!-- Ambient Animated Blobs -->
+  <div class="ambient-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- ================= STICKY TOP NAVBAR ================= -->
+  <nav class="navbar">
+    <a href="#" class="brand">
+      <div class="brand-icon">AI</div>
+      <span data-i18n="navBrand">Prompt Engineering Lab</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#mod1" data-i18n="navM1">01. Intro</a>
+      <a href="#mod2" data-i18n="navM2">02. LLMs</a>
+      <a href="#mod3" data-i18n="navM3">03. Chat</a>
+      <a href="#mod4" data-i18n="navM4">04. Apps</a>
+      <a href="#mod5" data-i18n="navM5">05. RAG</a>
+      <a href="#mod6" data-i18n="navM6">06. Lab</a>
     </div>
 
-    <h3>Curriculum</h3>
-    <a href="#m01">01. Prompt Fundamentals</a>
-    <a href="#m02">02. LLM Architecture & Tokens</a>
-    <a href="#m03">03. Chat Roles & History</a>
-    <a href="#m04">04. Application System Design</a>
-    <a href="#m05">05. RAG & Vector Embeddings</a>
-    <a href="#m06">06. Prompt Evaluation Matrix</a>
+    <div class="nav-controls">
+      <!-- LANGUAGE TRANSLATION BUTTON -->
+      <button class="ctrl-btn" id="langBtn" onclick="cycleLanguage()" title="Translate Website">
+        <span>🌐</span>
+        <span id="langLabel">EN 🇬🇧</span>
+      </button>
 
-    <h3>Live Simulators</h3>
-    <a href="#lab-shots">🎯 Zero / Few-Shot Lab</a>
-    <a href="#lab-temp">🌡️ Temperature Slider</a>
-    <a href="#lab-chat">💬 Role Orchestrator</a>
-    <a href="#lab-rag">📦 RAG Chunk Sizing</a>
-    <a href="#lab-tokens">📊 Token & Cost Calculator</a>
-  </aside>
+      <!-- LIGHT / DARK MODE BUTTON -->
+      <button class="ctrl-btn" id="themeBtn" onclick="toggleTheme()" title="Switch Light / Dark Mode">
+        <span id="themeIcon">☀️</span>
+        <span id="themeLabel" data-i18n="themeBtnText">Light Mode</span>
+      </button>
+    </div>
+  </nav>
 
-  <!-- Ana İçerik -->
-  <main>
-    <header>
-      <div class="badge-pill">Interactive Learning Platform</div>
-      <h1>Prompting & LLMs</h1>
-      <p>An elegant, research-backed engineering handbook exploring autoregressive foundations, context limits, and retrieval architectures.</p>
+  <div class="container">
+    <!-- ================= HERO SECTION ================= -->
+    <header class="hero">
+      <div class="hero-badge">
+        <span>✨</span>
+        <span data-i18n="heroBadge">Complete Interactive Courseware • 6 Modules & Live Simulators</span>
+      </div>
+      <h1 data-i18n="heroTitle">Introduction to Prompt Engineering</h1>
+      <p data-i18n="heroDesc">
+        An illustrated, interactive masterclass covering large language model internals, attention mechanisms, multi-turn chat orchestration, production application design, and RAG vector pipelines.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-num">6 / 6</div>
+          <div class="stat-label" data-i18n="stat1">Complete Markdown Modules</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">12+</div>
+          <div class="stat-label" data-i18n="stat2">Interactive Sliders & Controls</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">3 Languages</div>
+          <div class="stat-label" data-i18n="stat3">Instant Live Translation (EN/TR/PL)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="scoreStat">100%</div>
+          <div class="stat-label" data-i18n="stat4">Interactive Readiness</div>
+        </div>
+      </div>
     </header>
 
-    <!-- MODULE 01 -->
-    <section id="m01">
-      <h2>01. Prompt Fundamentals & Paradigms</h2>
-      <p>Prompt engineering is the disciplined process of structuring inputs to align large language models with desired deterministic outputs. Effective prompts replace ambiguous open-ended questions with explicit behavioral roles, constraints, and delimiter-fenced parameters.</p>
-      
-      <h3>Core Principles</h3>
-      <ul>
-        <li><strong>Role Conditioning:</strong> Prime the transformer weights with a strong persona (e.g., <em>"Act as a Principal Cloud Architect"</em>).</li>
-        <li><strong>Delimiter Isolation:</strong> Enclose user-generated variables in XML tags (<code>&lt;context&gt;</code>) or backticks (<code>```</code>) to defend against prompt injection attacks.</li>
-        <li><strong>Output Scaffolding:</strong> Specify output syntax explicitly (e.g., Markdown tables or strict JSON schemas) to ensure reliable downstream parsing.</li>
-      </ul>
+    <!-- ================= MODULE 01: INTRODUCTION ================= -->
+    <section class="module-card" id="mod1">
+      <div class="module-header">
+        <div>
+          <span class="module-tag">01-introduction.md</span>
+          <h2 class="module-title" data-i18n="m1Title">01. Foundations of Prompt Engineering</h2>
+        </div>
+      </div>
 
-      <!-- SIMÜLATÖR 1: PROMPT STRATEJİLERİ -->
-      <div class="interactive-card" id="lab-shots">
-        <h4>🎯 Interactive Playground: Zero-Shot vs Few-Shot vs Chain-of-Thought</h4>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Click below to evaluate how in-context demonstration alters model reasoning paths:</p>
-        
-        <div class="btn-group">
-          <button class="btn active" onclick="setShot('zero', this)">Zero-Shot</button>
-          <button class="btn" onclick="setShot('few', this)">Few-Shot Demonstration</button>
-          <button class="btn" onclick="setShot('cot', this)">Chain-of-Thought (CoT)</button>
+      <p data-i18n="m1Intro">
+        Prompt engineering is the empirical science of structuring instructions, context, and constraints so that Large Language Models produce accurate, deterministic, and safe outputs. Instead of treating an LLM like a search engine, effective engineers program it through natural language structure.
+      </p>
+
+      <div class="theory-grid">
+        <div class="concept-box">
+          <h4>🎯 <span data-i18n="m1C1Title">Anatomy of a Great Prompt</span></h4>
+          <p data-i18n="m1C1Desc">Every robust prompt combines 5 pillars: Persona (Role), Task Directive, Contextual Knowledge, Constraints/Guardrails, and explicit Output Formatting (e.g., JSON or Markdown table).</p>
+        </div>
+        <div class="concept-box">
+          <h4>🧠 <span data-i18n="m1C2Title">Zero-Shot vs Few-Shot</span></h4>
+          <p data-i18n="m1C2Desc">Zero-shot relies purely on pre-trained weights. Few-shot (In-Context Learning) provides 2–5 input/output pairs inside the prompt to anchor style, edge cases, and label syntax.</p>
+        </div>
+        <div class="concept-box">
+          <h4>🔗 <span data-i18n="m1C3Title">Chain-of-Thought (CoT)</span></h4>
+          <p data-i18n="m1C3Desc">By instructing the model to "think step-by-step" before stating its final verdict, you allocate extra generation tokens for intermediate reasoning, drastically boosting math and logic accuracy.</p>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE LAB 1 -->
+      <div class="lab-box">
+        <div class="lab-header">
+          <div class="lab-title">
+            <span class="live-dot"></span>
+            <span data-i18n="lab1Title">Interactive Lab 1: Live Prompt Architect & Quality Scorer</span>
+          </div>
+          <span class="val-pill" id="promptScoreBadge">Quality Score: 35 / 100</span>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary);" data-i18n="lab1Sub">
+          Toggle the structural components below and slide the specificity level to see how raw prompts transform into production-grade instructions:
+        </p>
+
+        <div class="btn-row">
+          <button class="ui-btn active" id="pRole" onclick="togglePromptPart('role')">+ System Persona</button>
+          <button class="ui-btn" id="pContext" onclick="togglePromptPart('context')">+ Delimited Context</button>
+          <button class="ui-btn" id="pFew" onclick="togglePromptPart('few')">+ Few-Shot Examples</button>
+          <button class="ui-btn" id="pCot" onclick="togglePromptPart('cot')">+ Chain-of-Thought</button>
+          <button class="ui-btn" id="pJson" onclick="togglePromptPart('json')">+ Strict JSON Output</button>
         </div>
 
-        <div class="output-box" id="shotBox">
-          <strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours on flight mode.'"<br>
-          <strong>Output:</strong> Negative.<br>
-          <span style="color: var(--primary-cyan); font-size: 0.85rem;">⚡ Mechanism: Direct generation with zero exemplars; entirely reliant on prior pre-training weights.</span>
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span data-i18n="lab1Slider">Constraint Specificity Level:</span>
+            <span class="val-pill" id="specVal">Level 2 (Moderate)</span>
+          </div>
+          <input type="range" id="specSlider" min="1" max="3" step="1" value="2" oninput="updatePromptBuilder()">
+        </div>
+
+        <div class="terminal" id="promptBuilderOutput"></div>
+      </div>
+    </section>
+
+    <!-- ================= MODULE 02: UNDERSTANDING LLMS ================= -->
+    <section class="module-card" id="mod2">
+      <div class="module-header">
+        <div>
+          <span class="module-tag">02-understanding-llms.md</span>
+          <h2 class="module-title" data-i18n="m2Title">02. Understanding LLMs: Tokens, Attention & Sampling</h2>
+        </div>
+      </div>
+
+      <p data-i18n="m2Intro">
+        Large Language Models are autoregressive Transformer neural networks. They do not think or look up facts in a database; instead, they break text into sub-word units called tokens, compute contextual relationships via Self-Attention, and predict a probability distribution over the entire vocabulary for the very next token.
+      </p>
+
+      <div class="theory-grid">
+        <div class="concept-box">
+          <h4>🧩 <span data-i18n="m2C1Title">Byte-Pair Tokenization</span></h4>
+          <p data-i18n="m2C1Desc">Text is split into tokens (~4 characters or 0.75 words per token in English). Rare words and non-English characters often consume multiple tokens, directly impacting context limits and API billing.</p>
+        </div>
+        <div class="concept-box">
+          <h4>🔍 <span data-i18n="m2C2Title">Self-Attention Mechanism</span></h4>
+          <p data-i18n="m2C2Desc">Every token attends to every preceding token via Query, Key, and Value vectors, allowing the model to resolve pronouns, track long-range code dependencies, and weigh relevant context.</p>
+        </div>
+        <div class="concept-box">
+          <h4>🎲 <span data-i18n="m2C3Title">Temperature & Top-p</span></h4>
+          <p data-i18n="m2C3Desc">Temperature scales logits before the Softmax function. Low T (0.0) makes the highest-probability token dominate; high T (>1.0) flattens the curve, encouraging creative or hallucinated choices.</p>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE LAB 2 -->
+      <div class="lab-box">
+        <div class="lab-header">
+          <div class="lab-title">
+            <span class="live-dot"></span>
+            <span data-i18n="lab2Title">Interactive Lab 2: Softmax Next-Token Probability Visualizer</span>
+          </div>
+          <button class="ui-btn active" onclick="sampleNextToken()">🎲 Sample Token Now</button>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-secondary);">
+          Prompt prefix: <code>"The most important breakthrough in modern artificial intelligence is the..."</code>
+        </p>
+
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>🌡️ Temperature ($T$):</span>
+            <span class="val-pill" id="tempLabel">0.3 (Focused)</span>
+          </div>
+          <input type="range" id="tempRange" min="0.1" max="1.8" step="0.1" value="0.3" oninput="updateSoftmax()">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>🎯 Top-p (Nucleus Threshold):</span>
+            <span class="val-pill" id="toppLabel">0.90</span>
+          </div>
+          <input type="range" id="toppRange" min="0.2" max="1.0" step="0.05" value="0.90" oninput="updateSoftmax()">
+        </div>
+
+        <div id="probBarsContainer" style="margin-top:1.2rem;"></div>
+        <div class="terminal" id="sampledTokenResult">Click "Sample Token Now" or drag the Temperature slider to inspect real-time Softmax distribution changes.</div>
+      </div>
+    </section>
+
+    <!-- ================= MODULE 03: CHAT MODELS ================= -->
+    <section class="module-card" id="mod3">
+      <div class="module-header">
+        <div>
+          <span class="module-tag">03-chat-models.md</span>
+          <h2 class="module-title" data-i18n="m3Title">03. Chat Models, Roles & Conversational Memory</h2>
+        </div>
+      </div>
+
+      <p data-i18n="m3Intro">
+        While base models simply complete documents, Chat Models are post-trained with Supervised Fine-Tuning (SFT) and Reinforcement Learning from Human Feedback (RLHF). They process structured arrays of role-tagged messages (`system`, `user`, `assistant`) and rely on the developer resending prior turns to maintain the illusion of memory.
+      </p>
+
+      <div class="theory-grid">
+        <div class="concept-box">
+          <h4>🛡️ <span data-i18n="m3C1Title">The System Role</span></h4>
+          <p data-i18n="m3C1Desc">Sets global behavioral instructions, tone, forbidden topics, and output constraints with higher authority than regular user messages.</p>
+        </div>
+        <div class="concept-box">
+          <h4>🔄 <span data-i18n="m3C2Title">Stateless Memory Illusion</span></h4>
+          <p data-i18n="m3C2Desc">LLM APIs do not remember past calls automatically. Every turn requires sending the entire conversation history (or a summarized sliding window) inside the payload.</p>
+        </div>
+        <div class="concept-box">
+          <h4>🧱 <span data-i18n="m3C3Title">Guardrails & Injection Defense</span></h4>
+          <p data-i18n="m3C3Desc">Malicious users attempt "Ignore previous instructions" attacks. Separating untrusted user input and reinforcing system boundaries prevents role hijacking.</p>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE LAB 3 -->
+      <div class="lab-box">
+        <div class="lab-header">
+          <div class="lab-title">
+            <span class="live-dot"></span>
+            <span data-i18n="lab3Title">Interactive Lab 3: System Role & Memory Window Simulator</span>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="ui-btn active" onclick="setChatPersona('json', this)">🤖 Strict JSON API</button>
+          <button class="ui-btn" onclick="setChatPersona('socratic', this)">🎓 Socratic Professor</button>
+          <button class="ui-btn" onclick="setChatPersona('secops', this)">🛡️ Security Auditor</button>
+          <button class="ui-btn" onclick="setChatPersona('pirate', this)">🏴‍☠️ Pirate Storyteller</button>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>🧠 Context Memory Window (Past Turns Included):</span>
+            <span class="val-pill" id="memTurnsVal">4 Turns ( Optimal )</span>
+          </div>
+          <input type="range" id="memSlider" min="0" max="10" step="1" value="4" oninput="updateChatSim()">
+        </div>
+
+        <div class="terminal" id="chatSimOutput"></div>
+      </div>
+    </section>
+
+    <!-- ================= MODULE 04: DESIGNING LLM APPLICATIONS ================= -->
+    <section class="module-card" id="mod4">
+      <div class="module-header">
+        <div>
+          <span class="module-tag">04-designing-llm-applications.md</span>
+          <h2 class="module-title" data-i18n="m4Title">04. Designing Production LLM Applications</h2>
+        </div>
+      </div>
+
+      <p data-i18n="m4Intro">
+        Integrating a probabilistic language model into deterministic software requires strong architectural patterns: structured schema enforcement, multi-step prompt chaining, semantic caching, and intelligent model routing to balance cost, latency, and intelligence.
+      </p>
+
+      <div class="theory-grid">
+        <div class="concept-box">
+          <h4>📐 <span data-i18n="m4C1Title">Structured Outputs & Tools</span></h4>
+          <p data-i18n="m4C1Desc">Force the LLM to adhere to strict JSON Schemas or invoke external APIs (Function Calling) so downstream code never crashes on unexpected conversational prose.</p>
+        </div>
+        <div class="concept-box">
+          <h4>⛓️ <span data-i18n="m4C2Title">Prompt Chaining & Routing</span></h4>
+          <p data-i18n="m4C2Desc">Break complex workflows into sequential specialized prompts (Classify -> Retrieve -> Draft -> Verify) rather than cramming everything into one brittle mega-prompt.</p>
+        </div>
+        <div class="concept-box">
+          <h4>⚡ <span data-i18n="m4C3Title">Latency & Cost Optimization</span></h4>
+          <p data-i18n="m4C3Desc">Use small fast models (8B) for classification and routing, reserving frontier reasoning models only for complex synthesis, backed by prompt caching.</p>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE LAB 4 -->
+      <div class="lab-box">
+        <div class="lab-header">
+          <div class="lab-title">
+            <span class="live-dot"></span>
+            <span data-i18n="lab4Title">Interactive Lab 4: Production Architecture & Cost/Latency Simulator</span>
+          </div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>⚙️ Model Tier Selection:</span>
+            <span class="val-pill" id="modelTierLabel">Mid-Tier Balanced (70B)</span>
+          </div>
+          <input type="range" id="modelTierSlider" min="1" max="3" step="1" value="2" oninput="updateArchSim()">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>📈 Daily Active Requests:</span>
+            <span class="val-pill" id="reqCountLabel">10,000 req/day</span>
+          </div>
+          <input type="range" id="reqSlider" min="1000" max="50000" step="1000" value="10000" oninput="updateArchSim()">
+        </div>
+
+        <div class="btn-row">
+          <button class="ui-btn active" id="btnCache" onclick="toggleArchOpt('cache')">⚡ Enable Prompt Caching (-65% Cost)</button>
+          <button class="ui-btn active" id="btnSchema" onclick="toggleArchOpt('schema')">📐 Enforce JSON Schema (+99.9% Parse Safety)</button>
+        </div>
+
+        <div class="meter-grid">
+          <div class="meter-card">
+            <div class="meter-title">Avg Latency (TTFT)</div>
+            <div class="meter-val" id="latMeter">420 ms</div>
+          </div>
+          <div class="meter-card">
+            <div class="meter-title">Estimated Daily Cost</div>
+            <div class="meter-val" id="costMeter">$14.00</div>
+          </div>
+          <div class="meter-card">
+            <div class="meter-title">Pipeline Reliability</div>
+            <div class="meter-val" id="relMeter">99.8%</div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- MODULE 02 -->
-    <section id="m02">
-      <h2>02. LLM Architecture & Hyperparameters</h2>
-      <p>State-of-the-art LLMs are autoregressive decoder-only transformers. They operate by predicting token probability distributions: <code>P(w_t | w_1, ..., w_{t-1})</code>. They do not query a database; they perform statistical text generation conditioned on the prompt context.</p>
+    <!-- ================= MODULE 05: PROMPTS, CONTEXT & RAG ================= -->
+    <section class="module-card" id="mod5">
+      <div class="module-header">
+        <div>
+          <span class="module-tag">05-prompts-context-and-rag.md</span>
+          <h2 class="module-title" data-i18n="m5Title">05. Prompts, Context Engineering & RAG Pipelines</h2>
+        </div>
+      </div>
 
-      <!-- SIMÜLATÖR 2: TEMPERATURE -->
-      <div class="interactive-card" id="lab-temp">
-        <h4>🌡️ Live Parameter Simulator: Temperature ($T$)</h4>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Adjust temperature to see how the softmax probability curve influences creativity and risk:</p>
-        
-        <div class="slider-row">
-          <label for="tempSlider"><strong>Temperature ($T$):</strong></label>
-          <input type="range" id="tempSlider" min="0" max="1.4" step="0.1" value="0.2">
-          <span class="badge-val" id="tempVal">0.2</span>
+      <p data-i18n="m5Intro">
+        Retrieval-Augmented Generation (RAG) grounds LLMs in private or up-to-date facts without expensive weight fine-tuning. Documents are split into chunks, converted into high-dimensional vectors via an embedding model, retrieved via Cosine Similarity, and injected directly into the prompt context.
+      </p>
+
+      <div class="theory-grid">
+        <div class="concept-box">
+          <h4>🧭 <span data-i18n="m5C1Title">Vector Embeddings</span></h4>
+          <p data-i18n="m5C1Desc">Transforms sentences into numerical coordinate arrays (e.g., 1536 dimensions) where semantically similar concepts cluster closely together regardless of exact keyword overlap.</p>
+        </div>
+        <div class="concept-box">
+          <h4>✂️ <span data-i18n="m5C2Title">Chunking & Overlap</span></h4>
+          <p data-i18n="m5C2Desc">Splitting PDFs or Markdown files into 256–512 token chunks with 10–20% sliding overlap preserves semantic focus while preventing mid-sentence context loss.</p>
+        </div>
+        <div class="concept-box">
+          <h4>🏆 <span data-i18n="m5C3Title">Hybrid Search & Reranking</span></h4>
+          <p data-i18n="m5C3Desc">Combining dense vector similarity with sparse keyword search (BM25) and a Cross-Encoder Reranker maximizes retrieval precision and prevents "Lost in the Middle" degradation.</p>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE LAB 5 -->
+      <div class="lab-box">
+        <div class="lab-header">
+          <div class="lab-title">
+            <span class="live-dot"></span>
+            <span data-i18n="lab5Title">Interactive Lab 5: RAG Chunking & Retrieval Optimizer</span>
+          </div>
         </div>
 
-        <div class="output-box" id="tempBox">
-          <strong>Mode: High Determinism (Greedy Sampling)</strong><br>
-          Probabilities are sharply peaked. The top token is selected with near certainty. Ideal for code compilation, mathematical proofs, and JSON extraction.
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>📦 Chunk Size (Tokens):</span>
+            <span class="val-pill" id="ragChunkVal">512 Tokens</span>
+          </div>
+          <input type="range" id="ragChunkSlider" min="128" max="2048" step="128" value="512" oninput="updateRagSim()">
         </div>
+
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>🔗 Chunk Overlap (%):</span>
+            <span class="val-pill" id="ragOverlapVal">15% Overlap</span>
+          </div>
+          <input type="range" id="ragOverlapSlider" min="0" max="40" step="5" value="15" oninput="updateRagSim()">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label-row">
+            <span>📚 Top-K Retrieved Passages:</span>
+            <span class="val-pill" id="ragTopkVal">Top 4 Chunks</span>
+          </div>
+          <input type="range" id="ragTopkSlider" min="1" max="12" step="1" value="4" oninput="updateRagSim()">
+        </div>
+
+        <div class="terminal" id="ragSimOutput"></div>
       </div>
     </section>
 
-    <!-- MODULE 03 -->
-    <section id="m03">
-      <h2>03. Conversational State & Role Orchestration</h2>
-      <p>Modern chat interfaces package conversation states into structured message arrays. The model evaluates interactions hierarchically across three standard roles:</p>
-      <ul>
-        <li><code>system</code>: Authoritative directives that govern boundaries, safety guardrails, and tone.</li>
-        <li><code>user</code>: Dynamic instructions or requests submitted by the operator.</li>
-        <li><code>assistant</code>: Synthetic responses generated in previous conversational turns.</li>
-      </ul>
-
-      <!-- SIMÜLATÖR 3: ROLE ORCHESTRATOR -->
-      <div class="interactive-card" id="lab-chat">
-        <h4>💬 System Role Sandbox</h4>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Switch the system role to inspect how persona steering transforms the response to the same query:</p>
-        
-        <div class="btn-group">
-          <button class="btn active" onclick="setRole('assistant', this)">Default Assistant</button>
-          <button class="btn" onclick="setRole('sql', this)">Strict SQL Engine</button>
-          <button class="btn" onclick="setRole('socratic', this)">Socratic Tutor</button>
-        </div>
-
-        <div class="output-box" id="roleBox">
-          <code>[system]</code>: You are a helpful AI assistant.<br>
-          <code>[user]</code>: How do I filter users older than 21?<br>
-          <code>[assistant]</code>: In SQL, you can use the WHERE clause: <code>SELECT * FROM users WHERE age > 21;</code>
+    <!-- ================= MODULE 06: LABORATORY WORKBOOK ================= -->
+    <section class="module-card" id="mod6">
+      <div class="module-header">
+        <div>
+          <span class="module-tag">06-laboratory-workbook.md</span>
+          <h2 class="module-title" data-i18n="m6Title">06. Laboratory Workbook & Mastery Quiz</h2>
         </div>
       </div>
-    </section>
 
-    <!-- MODULE 04 -->
-    <section id="m04">
-      <h2>04. Production LLM System Design</h2>
-      <p>Moving from single prompts to production-grade applications requires treating the language model as a probabilistic execution component surrounded by deterministic software engineering practices:</p>
-      <ul>
-        <li><strong>Schema Enforcement:</strong> Using JSON Mode or tools like Pydantic/Instructor to validate shapes.</li>
-        <li><strong>Step Decomposition:</strong> Splitting complex reasoning into sequential prompt chains.</li>
-        <li><strong>Fallback Routing:</strong> Catching parse errors and retrying with low-temperature deterministic parameters.</li>
-      </ul>
-    </section>
+      <p data-i18n="m6Intro">
+        Put theory into practice! Test your understanding of the 6 course modules by solving the interactive prompt-debugging scenarios and completing the live certification check below.
+      </p>
 
-    <!-- MODULE 05 -->
-    <section id="m05">
-      <h2>05. Retrieval-Augmented Generation (RAG)</h2>
-      <p>RAG connects LLMs to external, up-to-date knowledge repositories without fine-tuning. Unstructured documents are divided into text chunks, embedded into dense vector coordinates using models like <code>text-embedding-3-small</code>, and matched via Cosine Similarity against incoming user queries.</p>
-
-      <!-- SIMÜLATÖR 4: CHUNK SIZING -->
-      <div class="interactive-card" id="lab-rag">
-        <h4>📦 RAG Chunk Size & Context Trade-offs</h4>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Slide to balance vector granularity against contextual breadth:</p>
-
-        <div class="slider-row">
-          <label for="chunkSlider"><strong>Chunk Size:</strong></label>
-          <input type="range" id="chunkSlider" min="128" max="2048" step="128" value="256">
-          <span class="badge-val" id="chunkVal">256 tkn</span>
+      <!-- INTERACTIVE LAB 6: QUIZ -->
+      <div class="lab-box">
+        <div class="lab-header">
+          <div class="lab-title">
+            <span class="live-dot"></span>
+            <span data-i18n="lab6Title">Interactive Lab 6: Live Prompt Engineering Mastery Quiz</span>
+          </div>
+          <span class="val-pill" id="quizScorePill">Score: 0 / 3</span>
         </div>
 
-        <div class="output-box" id="chunkBox">
-          <strong>Granular Chunks (256 tokens)</strong><br>
-          Pinpoint semantic precision. Embeddings are highly focused on specific sentences, reducing context noise. Risk: Context boundary cuts can split complex arguments.
+        <div style="margin-bottom:1.2rem;">
+          <p><strong>Q1:</strong> Which parameter settings should you choose when extracting strict JSON financial data from invoices?</p>
+          <div class="btn-row">
+            <button class="ui-btn" onclick="answerQuiz(1, false, this)">Temperature = 1.4, No Schema</button>
+            <button class="ui-btn" onclick="answerQuiz(1, true, this)">Temperature = 0.0, Strict JSON Schema</button>
+            <button class="ui-btn" onclick="answerQuiz(1, false, this)">Top-p = 1.0, High Creativity</button>
+          </div>
         </div>
+
+        <div style="margin-bottom:1.2rem;">
+          <p><strong>Q2:</strong> Why do we include a 10–20% token overlap when chunking documents for a RAG pipeline?</p>
+          <div class="btn-row">
+            <button class="ui-btn" onclick="answerQuiz(2, true, this)">To prevent cutting semantic context right across chunk boundaries</button>
+            <button class="ui-btn" onclick="answerQuiz(2, false, this)">To make the LLM generate random creative poems</button>
+            <button class="ui-btn" onclick="answerQuiz(2, false, this)">To delete the system prompt</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:1.2rem;">
+          <p><strong>Q3:</strong> How does a stateless Chat Completions API remember what you said 3 messages ago?</p>
+          <div class="btn-row">
+            <button class="ui-btn" onclick="answerQuiz(3, false, this)">It permanently alters its neural weights on every chat message</button>
+            <button class="ui-btn" onclick="answerQuiz(3, true, this)">The application resends the message history array in the request payload</button>
+          </div>
+        </div>
+
+        <div class="terminal" id="quizFeedback">Select the correct answers above to test your mastery of the course materials!</div>
       </div>
     </section>
+  </div>
 
-    <!-- MODULE 06 -->
-    <section id="m06">
-      <h2>06. Laboratory Workbook & Token Economics</h2>
-      <p>Systematic evaluation is required to deploy LLMs safely and cost-effectively. Key metrics include Hallucination Rate, Latency to First Token (TTFT), and Context Cost.</p>
+  <footer>
+    <p>Built for the <strong>Prompt Engineering & LLMs Course</strong> • Complete Interactive Edition (All 6 Markdown Modules Integrated)</p>
+  </footer>
 
-      <!-- SIMÜLATÖR 5: TOKEN CALCULATOR -->
-      <div class="interactive-card" id="lab-tokens">
-        <h4>📊 Interactive Token & Cost Estimator</h4>
-        <p style="color: var(--text-muted); font-size: 0.92rem;">Simulate estimated tokens and API cost for a 1,000-user daily application:</p>
-
-        <div class="slider-row">
-          <label for="tokenSlider"><strong>Context Length (Tokens/req):</strong></label>
-          <input type="range" id="tokenSlider" min="500" max="16000" step="500" value="2000">
-          <span class="badge-val" id="tokenVal">2,000</span>
-        </div>
-
-        <div class="output-box" id="tokenBox">
-          <strong>Estimated Volume:</strong> 2,000,000 tokens/day<br>
-          <strong>Estimated Daily Cost (at $2.50 / 1M tokens):</strong> $5.00 / day<br>
-          <em>Optimization tip: Utilize prompt caching to reduce token overhead by up to 80%.</em>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Script Mantığı -->
+  <!-- ================= JAVASCRIPT LOGIC (THEME, TRANSLATION & SIMULATORS) ================= -->
   <script>
-    // 1. Prompt Stratejileri
-    function setShot(mode, btn) {
-      document.querySelectorAll('#lab-shots .btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const box = document.getElementById('shotBox');
+    // 1. SCROLL PROGRESS BAR
+    window.addEventListener('scroll', () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      document.getElementById('scrollProgress').style.width = scrolled + '%';
+    });
 
-      if (mode === 'zero') {
-        box.innerHTML = `<strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours on flight mode.'"<br><strong>Output:</strong> Negative.<br><span style="color: var(--primary-cyan); font-size: 0.85rem;">⚡ Mechanism: Direct generation with zero exemplars; entirely reliant on prior pre-training weights.</span>`;
-      } else if (mode === 'few') {
-        box.innerHTML = `<strong>Prompt:</strong><br>Review: 'Ultra fast shipping!' -> Positive<br>Review: 'Flimsy build quality.' -> Negative<br>Review: 'The battery lasted 2 hours on flight mode.' -><br><strong>Output:</strong> Negative.<br><span style="color: var(--primary-emerald); font-size: 0.85rem;">⚡ Mechanism: In-context examples guide output formatting and tone consistency.</span>`;
-      } else if (mode === 'cot') {
-        box.innerHTML = `<strong>Prompt:</strong> "The battery advertises 12h but lasted 2h. Analyze satisfaction step-by-step."<br><strong>Output:</strong> 1. Expected duration: 12 hours.<br>2. Measured duration: 2 hours (83.3% loss).<br>3. Conclusion: Highly defective performance.<br><span style="color: var(--primary-purple); font-size: 0.85rem;">⚡ Mechanism: Chain-of-Thought expands computational space for token generation before conclusion.</span>`;
+    // 2. LIGHT / DARK MODE TOGGLE
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      document.getElementById('themeIcon').textContent = next === 'dark' ? '☀️' : '🌙';
+      updateThemeButtonText();
+    }
+
+    function updateThemeButtonText() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const dict = translations[currentLang];
+      document.getElementById('themeLabel').textContent = isDark ? dict.lightMode : dict.darkMode;
+    }
+
+    // 3. MULTI-LANGUAGE TRANSLATION SYSTEM (EN / TR / PL)
+    const langs = ['en', 'tr', 'pl'];
+    let currentLangIdx = 0;
+    let currentLang = 'en';
+
+    const translations = {
+      en: {
+        flag: "EN 🇬🇧",
+        lightMode: "Light Mode",
+        darkMode: "Dark Mode",
+        navBrand: "Prompt Engineering Lab",
+        navM1: "01. Intro", navM2: "02. LLMs", navM3: "03. Chat", navM4: "04. Apps", navM5: "05. RAG", navM6: "06. Lab",
+        heroBadge: "Complete Interactive Courseware • 6 Modules & Live Simulators",
+        heroTitle: "Introduction to Prompt Engineering",
+        heroDesc: "An illustrated, interactive masterclass covering large language model internals, attention mechanisms, multi-turn chat orchestration, production application design, and RAG vector pipelines.",
+        stat1: "Complete Markdown Modules", stat2: "Interactive Sliders & Controls", stat3: "Instant Live Translation (EN/TR/PL)", stat4: "Interactive Readiness",
+        m1Title: "01. Foundations of Prompt Engineering",
+        m1Intro: "Prompt engineering is the empirical science of structuring instructions, context, and constraints so that Large Language Models produce accurate, deterministic, and safe outputs. Instead of treating an LLM like a search engine, effective engineers program it through natural language structure.",
+        m1C1Title: "Anatomy of a Great Prompt", m1C1Desc: "Every robust prompt combines 5 pillars: Persona (Role), Task Directive, Contextual Knowledge, Constraints/Guardrails, and explicit Output Formatting (e.g., JSON or Markdown table).",
+        m1C2Title: "Zero-Shot vs Few-Shot", m1C2Desc: "Zero-shot relies purely on pre-trained weights. Few-shot (In-Context Learning) provides 2–5 input/output pairs inside the prompt to anchor style, edge cases, and label syntax.",
+        m1C3Title: "Chain-of-Thought (CoT)", m1C3Desc: "By instructing the model to 'think step-by-step' before stating its final verdict, you allocate extra generation tokens for intermediate reasoning, drastically boosting math and logic accuracy.",
+        lab1Title: "Interactive Lab 1: Live Prompt Architect & Quality Scorer",
+        lab1Sub: "Toggle the structural components below and slide the specificity level to see how raw prompts transform into production-grade instructions:",
+        lab1Slider: "Constraint Specificity Level:",
+        m2Title: "02. Understanding LLMs: Tokens, Attention & Sampling",
+        m2Intro: "Large Language Models are autoregressive Transformer neural networks. They break text into sub-word units called tokens, compute contextual relationships via Self-Attention, and predict a probability distribution over the vocabulary for the next token.",
+        m2C1Title: "Byte-Pair Tokenization", m2C1Desc: "Text is split into tokens (~4 characters per token in English). Rare words and non-English characters consume multiple tokens, directly impacting context limits and API billing.",
+        m2C2Title: "Self-Attention Mechanism", m2C2Desc: "Every token attends to every preceding token via Query, Key, and Value vectors, allowing the model to resolve pronouns and weigh relevant context.",
+        m2C3Title: "Temperature & Top-p", m2C3Desc: "Temperature scales logits before Softmax. Low T (0.0) makes the highest-probability token dominate; high T (>1.0) flattens the curve, encouraging creative choices.",
+        lab2Title: "Interactive Lab 2: Softmax Next-Token Probability Visualizer",
+        m3Title: "03. Chat Models, Roles & Conversational Memory",
+        m3Intro: "Chat Models are post-trained with SFT and RLHF. They process structured arrays of role-tagged messages (system, user, assistant) and rely on resending prior turns to maintain conversational state.",
+        m3C1Title: "The System Role", m3C1Desc: "Sets global behavioral instructions, tone, forbidden topics, and output constraints with higher authority than regular user messages.",
+        m3C2Title: "Stateless Memory Illusion", m3C2Desc: "LLM APIs do not remember past calls automatically. Every turn requires sending the conversation history array inside the request payload.",
+        m3C3Title: "Guardrails & Injection Defense", m3C3Desc: "Separating untrusted user input with XML tags and reinforcing system boundaries prevents prompt injection hijacking.",
+        lab3Title: "Interactive Lab 3: System Role & Memory Window Simulator",
+        m4Title: "04. Designing Production LLM Applications",
+        m4Intro: "Integrating a probabilistic language model into deterministic software requires structured schema enforcement, multi-step prompt chaining, semantic caching, and intelligent model routing.",
+        m4C1Title: "Structured Outputs & Tools", m4C1Desc: "Force the LLM to adhere to strict JSON Schemas or invoke external APIs (Function Calling) so downstream code never crashes.",
+        m4C2Title: "Prompt Chaining & Routing", m4C2Desc: "Break complex workflows into sequential specialized prompts (Classify -> Retrieve -> Draft -> Verify) rather than one brittle mega-prompt.",
+        m4C3Title: "Latency & Cost Optimization", m4C3Desc: "Use small fast models (8B) for routing, reserving frontier reasoning models for synthesis, backed by prompt caching.",
+        lab4Title: "Interactive Lab 4: Production Architecture & Cost/Latency Simulator",
+        m5Title: "05. Prompts, Context Engineering & RAG Pipelines",
+        m5Intro: "Retrieval-Augmented Generation (RAG) grounds LLMs in private or up-to-date facts without expensive weight fine-tuning. Documents are split into chunks, embedded into vectors, retrieved via Cosine Similarity, and injected into the prompt.",
+        m5C1Title: "Vector Embeddings", m5C1Desc: "Transforms sentences into numerical coordinate arrays where semantically similar concepts cluster closely together.",
+        m5C2Title: "Chunking & Overlap", m5C2Desc: "Splitting documents into 256–512 token chunks with 10–20% sliding overlap preserves semantic focus and prevents context loss.",
+        m5C3Title: "Hybrid Search & Reranking", m5C3Desc: "Combining vector similarity with keyword search (BM25) and a Reranker maximizes retrieval precision.",
+        lab5Title: "Interactive Lab 5: RAG Chunking & Retrieval Optimizer",
+        m6Title: "06. Laboratory Workbook & Mastery Quiz",
+        m6Intro: "Put theory into practice! Test your understanding of all 6 course modules by completing the live interactive certification check below.",
+        lab6Title: "Interactive Lab 6: Live Prompt Engineering Mastery Quiz"
+      },
+      tr: {
+        flag: "TR 🇹🇷",
+        lightMode: "Açık Tema",
+        darkMode: "Koyu Tema",
+        navBrand: "Prompt Mühendisliği Lab",
+        navM1: "01. Giriş", navM2: "02. LLM'ler", navM3: "03. Sohbet", navM4: "04. Uygulama", navM5: "05. RAG", navM6: "06. Lab",
+        heroBadge: "Eksiksiz İnteraktif Eğitim Platformu • 6 Modül & Canlı Simülatörler",
+        heroTitle: "Prompt Mühendisliğine Giriş",
+        heroDesc: "Büyük dil modeli mimarisi, dikkat (attention) mekanizmaları, çok turlu sohbet yönetimi, üretim seviyesi uygulama tasarımı ve RAG vektör sistemlerini kapsayan interaktif rehber.",
+        stat1: "Tamamlanmış Markdown Modülü", stat2: "İnteraktif Slider & Kontrol", stat3: "Anında Canlı Çeviri (EN/TR/PL)", stat4: "İnteraktif Hazırlık",
+        m1Title: "01. Prompt Mühendisliğinin Temelleri",
+        m1Intro: "Prompt mühendisliği; Büyük Dil Modellerinin (LLM) doğru, tutarlı ve güvenli çıktılar üretmesi için talimatları, bağlamı ve kısıtlamaları yapılandırma bilimidir. LLM'i basit bir arama motoru gibi kullanmak yerine doğal dil ile programlamaktır.",
+        m1C1Title: "Güçlü Bir Promptun Anatomisi", m1C1Desc: "Her sağlam prompt 5 temel sütunu birleştirir: Persona (Rol), Görev Talimatı, Bağlamsal Bilgi, Kısıtlamalar ve net Çıktı Formatı (JSON veya Tablo).",
+        m1C2Title: "Zero-Shot ve Few-Shot", m1C2Desc: "Zero-shot yalnızca modelin ön eğitimine güvenir. Few-shot ise prompt içinde 2-5 örnek girdi/çıktı vererek modelin üslup ve formatını sabitler.",
+        m1C3Title: "Adım Adım Düşünme (CoT)", m1C3Desc: "Modele nihai cevabı vermeden önce 'adım adım düşün' talimatı vermek, ara akıl yürütme tokenları oluşturarak matematik ve mantık başarısını katlar.",
+        lab1Title: "İnteraktif Lab 1: Canlı Prompt Mimarı ve Kalite Puanlayıcı",
+        lab1Sub: "Aşağıdaki yapı taşlarını butonlarla açıp kapatın ve detay seviyesini kaydırarak ham bir promptun nasıl profesyonel bir komuta dönüştüğünü görün:",
+        lab1Slider: "Kısıtlama ve Detay Seviyesi:",
+        m2Title: "02. LLM'leri Anlamak: Tokenlar, Attention ve Örnekleme",
+        m2Intro: "Büyük Dil Modelleri otoregresif Transformer ağlarıdır. Metni 'token' adı verilen alt kelime parçalarına böler, Self-Attention ile bağlamı hesaplar ve bir sonraki token için olasılık dağılımı üretir.",
+        m2C1Title: "Byte-Pair Tokenizasyon", m2C1Desc: "Metin tokenlara bölünür (İngilizcede ~4 karakter 1 token). Nadir kelimeler ve Türkçe ekler birden fazla token tüketerek maliyeti ve bağlam sınırını etkiler.",
+        m2C2Title: "Self-Attention Mekanizması", m2C2Desc: "Her token, kendisinden önceki tüm tokenlarla Query, Key ve Value vektörleri üzerinden ilişki kurarak zamirleri ve uzun kod bağlantılarını çözer.",
+        m2C3Title: "Temperature ve Top-p", m2C3Desc: "Temperature, Softmax öncesi olasılıkları ölçekler. Düşük T (0.0) en yüksek olasılıklı kelimeyi seçtirir; yüksek T (>1.0) yaratıcılığı ve halüsinasyon riskini artırır.",
+        lab2Title: "İnteraktif Lab 2: Canlı Softmax Sonraki-Token Olasılık Görselleştirici",
+        m3Title: "03. Sohbet Modelleri, Roller ve Konuşma Belleği",
+        m3Intro: "Sohbet modelleri SFT ve RLHF ile eğitilmiştir. Mesajları rol etiketli diziler (system, user, assistant) halinde işler ve geçmişi hatırlamak için önceki mesajların her istekte tekrar gönderilmesine ihtiyaç duyar.",
+        m3C1Title: "System (Sistem) Rolü", m3C1Desc: "Kullanıcı mesajlarından daha yüksek yetkiyle genel davranış kurallarını, tonu ve çıktı sınırlarını belirler.",
+        m3C2Title: "Bellek İllüzyonu (Stateless API)", m3C2Desc: "LLM API'leri geçmişi kendiliğinden hatırlamaz. Her turda konuşma geçmişi dizisinin tekrar gönderilmesi gerekir.",
+        m3C3Title: "Güvenlik ve Prompt Injection", m3C3Desc: "Kullanıcı girdisini XML etiketleriyle ayırmak ve sistem sınırlarını korumak 'Önceki talimatları unut' saldırılarını engeller.",
+        lab3Title: "İnteraktif Lab 3: Sistem Rolü ve Bellek Penceresi Simülatörü",
+        m4Title: "04. Üretim Seviyesi LLM Uygulamaları Tasarlamak",
+        m4Intro: "Olasılıksal bir dil modelini deterministik yazılımlara entegre etmek; katı JSON şema doğrulaması, çok adımlı prompt zincirleri (chaining), önbellekleme ve akıllı model yönlendirmesi gerektirir.",
+        m4C1Title: "Yapılandırılmış Çıktı & Araçlar", m4C1Desc: "Arayüzün çökmemesi için LLM'i katı JSON Şemalarına uymaya veya dış API'leri (Function Calling) çağırmaya zorlayın.",
+        m4C2Title: "Prompt Zincirleme (Chaining)", m4C2Desc: "Karmaşık görevleri tek bir devasa prompt yerine sıralı adımlara (Sınıflandır -> Getir -> Taslak Oluştur -> Doğrula) bölün.",
+        m4C3Title: "Gecikme ve Maliyet Optimizasyonu", m4C3Desc: "Basit yönlendirmeler için küçük hızlı modelleri (8B), karmaşık sentezler için büyük modelleri kullanın ve Prompt Caching açın.",
+        lab4Title: "İnteraktif Lab 4: Mimari Pipeline, Maliyet ve Gecikme Simülatörü",
+        m5Title: "05. Promptlar, Bağlam Mühendisliği ve RAG",
+        m5Intro: "Retrieval-Augmented Generation (RAG), pahalı model eğitimi yapmadan LLM'leri güncel veya özel verilerle besler. Belgeler parçalara (chunk) ayrılır, vektörlere dönüştürülür, Kosinüs Benzerliği ile bulunur ve prompta eklenir.",
+        m5C1Title: "Vektör Gömmeleri (Embeddings)", m5C1Desc: "Cümleleri anlamsal olarak benzer kavramların birbirine yakın kümelendiği çok boyutlu sayısal koordinatlara dönüştürür.",
+        m5C2Title: "Parçalama (Chunking) & Overlap", m5C2Desc: "Belgeleri %10-20 örtüşme (overlap) ile 256-512 tokenlık parçalara bölmek cümlelerin ortadan kesilip anlam kaybetmesini önler.",
+        m5C3Title: "Hibrit Arama ve Reranking", m5C3Desc: "Vektör aramasını anahtar kelime araması (BM25) ve Reranker ile birleştirmek en doğru bilginin bulunmasını sağlar.",
+        lab5Title: "İnteraktif Lab 5: RAG Parçalama (Chunking) ve Erişim Optimize Edici",
+        m6Title: "06. Laboratuvar Çalışma Kitabı ve Uzmanlık Testi",
+        m6Intro: "Teoriyi pratiğe dökün! Aşağıdaki canlı sertifika sorularını yanıtlayarak 6 modülün tamamındaki bilginizi test edin.",
+        lab6Title: "İnteraktif Lab 6: Canlı Prompt Mühendisliği Uzmanlık Testi"
+      },
+      pl: {
+        flag: "PL 🇵🇱",
+        lightMode: "Tryb Jasny",
+        darkMode: "Tryb Ciemny",
+        navBrand: "Laboratorium Prompt Engineering",
+        navM1: "01. Wstęp", navM2: "02. Modele LLM", navM3: "03. Czat", navM4: "04. Aplikacje", navM5: "05. RAG", navM6: "06. Lab",
+        heroBadge: "Kompletny Interaktywny Kurs • 6 Modułów i Symulatory na Żywo",
+        heroTitle: "Wprowadzenie do Prompt Engineeringu",
+        heroDesc: "Ilustrowany, interaktywny przewodnik obejmujący architekturę modeli językowych, mechanizm uwagi (attention), modele czatowe, projektowanie aplikacji oraz systemy wektorowe RAG.",
+        stat1: "Kompletnych Modułów Markdown", stat2: "Interaktywnych Suwaków i Przycisków", stat3: "Tłumaczenie na Żywo (EN/TR/PL)", stat4: "Gotowość Interaktywna",
+        m1Title: "01. Podstawy Prompt Engineeringu",
+        m1Intro: "Prompt engineering to nauka strukturyzowania instrukcji, kontekstu i ograniczeń tak, aby Duże Modele Językowe (LLM) generowały dokładne, deterministyczne i bezpieczne odpowiedzi.",
+        m1C1Title: "Anatomia Dobrego Promptu", m1C1Desc: "Każdy skuteczny prompt łączy 5 filarów: Rolę (Persona), Zadanie, Kontekst, Ograniczenia oraz jawny Format Wyjściowy (np. JSON lub tabela).",
+        m1C2Title: "Zero-Shot vs Few-Shot", m1C2Desc: "Zero-shot polega wyłącznie na wagach modelu. Few-shot dostarcza 2–5 przykładów w prompcie, stabilizując styl i format.",
+        m1C3Title: "Chain-of-Thought (CoT)", m1C3Desc: "Polecenie modelowi 'myśl krok po kroku' przydziela dodatkowe tokeny na wnioskowanie pośrednie, zwiększając trafność logiczną.",
+        lab1Title: "Interaktywne Lab 1: Architekt Promptów i Ocena Jakości",
+        lab1Sub: "Przełączaj elementy konstrukcyjne poniżej i przesuwaj suwak szczegółowości, aby zobaczyć transformację promptu:",
+        lab1Slider: "Poziom Szczegółowości Ograniczeń:",
+        m2Title: "02. Zrozumieć LLM: Tokeny, Attention i Próbkowanie",
+        m2Intro: "Modele LLM to autoregresyjne sieci Transformer. Dzielą tekst na tokeny, obliczają relacje przez Self-Attention i przewidują rozkład prawdopodobieństwa kolejnego tokenu.",
+        m2C1Title: "Tokenizacja BPE", m2C1Desc: "Tekst dzielony jest na pod-słowa (~4 znaki na token). Rzadkie słowa i polskie znaki zużywają więcej tokenów, wpływając na koszt i limit kontekstu.",
+        m2C2Title: "Mechanizm Self-Attention", m2C2Desc: "Każdy token analizuje poprzednie tokeny za pomocą wektorów Query, Key i Value, rozumiejąc kontekst całego zdania.",
+        m2C3Title: "Temperatura i Top-p", m2C3Desc: "Temperatura skaluje logity przed funkcją Softmax. Niska T (0.0) daje determinizm; wysoka T (>1.0) zwiększa kreatywność.",
+        lab2Title: "Interaktywne Lab 2: Wizualizator Prawdopodobieństwa Softmax",
+        m3Title: "03. Modele Czatowe, Role i Pamięć Konwersacji",
+        m3Intro: "Modele czatowe przetwarzają tablice wiadomości z rolami (system, user, assistant) i wymagają przesyłania historii w każdym zapytaniu API.",
+        m3C1Title: "Rola Systemowa (System)", m3C1Desc: "Definiuje globalne zasady zachowania, ton i ograniczenia z wyższym priorytetem niż wiadomości użytkownika.",
+        m3C2Title: "Iluzja Pamięci (Stateless)", m3C2Desc: "API modeli LLM nie pamięta poprzednich zapytań. Każda tura wymaga przesłania okna historii rozmowy.",
+        m3C3Title: "Ochrona przed Prompt Injection", m3C3Desc: "Oddzielanie danych użytkownika znacznikami XML chroni przed atakami typu 'Zignoruj poprzednie instrukcje'.",
+        lab3Title: "Interaktywne Lab 3: Symulator Ról Systemowych i Okna Pamięci",
+        m4Title: "04. Projektowanie Aplikacji LLM",
+        m4Intro: "Budowa systemów produkcyjnych wymaga wymuszania schematów JSON, łączenia promptów w łańcuchy (Chaining), pamięci podręcznej i routingu modeli.",
+        m4C1Title: "Ustrukturyzowane Wyjścia JSON", m4C1Desc: "Wymuszaj ścisły schemat JSON lub wywołania funkcji (Function Calling), aby kod aplikacji działał niezawodnie.",
+        m4C2Title: "Łańcuchy Promptów (Chaining)", m4C2Desc: "Dziel złożone zadania na sekwencję mniejszych kroków zamiast jednego gigantycznego promptu.",
+        m4C3Title: "Optymalizacja Kosztów i Opóźnień", m4C3Desc: "Używaj szybkich modeli (8B) do klasyfikacji, a dużych modeli do syntezy wraz z Prompt Cachingiem.",
+        lab4Title: "Interaktywne Lab 4: Symulator Architektury, Kosztów i Opóźnień",
+        m5Title: "05. Prompty, Kontekst i Systemy RAG",
+        m5Intro: "Retrieval-Augmented Generation (RAG) łączy LLM z zewnętrzną bazą wiedzy. Dokumenty są dzielone na fragmenty (chunki), zamieniane na wektory i wyszukiwane przez podobieństwo cosinusowe.",
+        m5C1Title: "Osadzenia Wektorowe (Embeddings)", m5C1Desc: "Zamienia tekst na wielowymiarowe wektory liczbowe, grupując podobne znaczeniowo pojęcia.",
+        m5C2Title: "Chunking i Zakładka (Overlap)", m5C2Desc: "Podział tekstu na fragmenty 256–512 tokenów z 10–20% zakładką zapobiega utracie kontekstu na granicach zdań.",
+        m5C3Title: "Wyszukiwanie Hybrydowe", m5C3Desc: "Łączenie wyszukiwania wektorowego ze słowami kluczowymi (BM25) i Rerankerem maksymalizuje trafność.",
+        lab5Title: "Interaktywne Lab 5: Optymalizator Chunkingu i Wyszukiwania RAG",
+        m6Title: "06. Zeszyt Laboratoryjny i Quiz Końcowy",
+        m6Intro: "Sprawdź swoją wiedzę w praktyce! Rozwiąż poniższy interaktywny test obejmujący wszystkie 6 modułów kursu.",
+        lab6Title: "Interaktywne Lab 6: Test Wiedzy z Prompt Engineeringu"
+      }
+    };
+
+    function cycleLanguage() {
+      currentLangIdx = (currentLangIdx + 1) % langs.length;
+      currentLang = langs[currentLangIdx];
+      const dict = translations[currentLang];
+      document.getElementById('langLabel').textContent = dict.flag;
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+      updateThemeButtonText();
+    }
+
+    // ================= LAB 1: PROMPT BUILDER =================
+    const promptState = { role: true, context: false, few: false, cot: false, json: false };
+
+    function togglePromptPart(key) {
+      promptState[key] = !promptState[key];
+      const btnMap = { role: 'pRole', context: 'pContext', few: 'pFew', cot: 'pCot', json: 'pJson' };
+      document.getElementById(btnMap[key]).classList.toggle('active', promptState[key]);
+      updatePromptBuilder();
+    }
+
+    function updatePromptBuilder() {
+      const spec = parseInt(document.getElementById('specSlider').value);
+      const specNames = { 1: "Level 1 (Vague)", 2: "Level 2 (Moderate)", 3: "Level 3 (Production Strict)" };
+      document.getElementById('specVal').textContent = specNames[spec];
+
+      let score = spec * 12;
+      let lines = [];
+
+      if (promptState.role) {
+        score += 15;
+        lines.push(`<span style="color:#38bdf8">[SYSTEM ROLE]</span> Act as a Senior AI Reliability Engineer.`);
+      }
+      lines.push(`<span style="color:#f472b6">[TASK]</span> Analyze the customer support ticket and classify its urgency.`);
+
+      if (promptState.context) {
+        score += 15;
+        lines.push(`<span style="color:#a855f7">[CONTEXT]</span> &lt;ticket&gt;"Production database cluster is returning 503 timeouts since 09:00 UTC."&lt;/ticket&gt;`);
+      }
+      if (promptState.few) {
+        score += 15;
+        lines.push(`<span style="color:#10b981">[FEW-SHOT EXAMPLES]</span>\n  Input: "How do I change my avatar?" -> Urgency: LOW\n  Input: "Payment gateway rejecting all cards" -> Urgency: CRITICAL`);
+      }
+      if (promptState.cot) {
+        score += 15;
+        lines.push(`<span style="color:#f59e0b">[REASONING]</span> Think step-by-step: 1. Identify affected system. 2. Assess user impact. 3. Assign urgency tier.`);
+      }
+      if (promptState.json) {
+        score += 16;
+        lines.push(`<span style="color:#38bdf8">[OUTPUT SCHEMA]</span> Respond ONLY with valid JSON: {"reasoning": "...", "urgency": "LOW|HIGH|CRITICAL", "sla_minutes": number}`);
+      }
+
+      score = Math.min(100, score);
+      document.getElementById('promptScoreBadge').textContent = `Quality Score: ${score} / 100`;
+      document.getElementById('promptBuilderOutput').innerHTML = lines.join('<br><br>');
+    }
+
+    // ================= LAB 2: SOFTMAX VISUALIZER =================
+    const baseLogits = [
+      { token: '"transformer"', logit: 4.2 },
+      { token: '"attention"', logit: 3.4 },
+      { token: '"neural"', logit: 2.6 },
+      { token: '"algorithm"', logit: 1.9 },
+      { token: '"banana"', logit: 0.3 }
+    ];
+
+    function computeProbs(temp) {
+      const scaled = baseLogits.map(x => Math.exp(x.logit / temp));
+      const sum = scaled.reduce((a, b) => a + b, 0);
+      return baseLogits.map((x, i) => ({ token: x.token, prob: scaled[i] / sum }));
+    }
+
+    function updateSoftmax() {
+      const temp = parseFloat(document.getElementById('tempRange').value);
+      const topp = parseFloat(document.getElementById('toppRange').value);
+
+      let modeText = temp <= 0.4 ? "Deterministic / Focused" : temp <= 1.0 ? "Balanced Conversational" : "High Entropy / Creative";
+      document.getElementById('tempLabel').textContent = `${temp.toFixed(1)} (${modeText})`;
+      document.getElementById('toppLabel').textContent = topp.toFixed(2);
+
+      const dist = computeProbs(temp);
+      let cumulative = 0;
+      let html = '';
+
+      dist.forEach(item => {
+        const pct = (item.prob * 100).toFixed(1);
+        const inNucleus = cumulative < topp;
+        cumulative += item.prob;
+        const barColor = inNucleus
+          ? 'linear-gradient(90deg, var(--accent-primary), var(--accent-secondary))'
+          : 'rgba(148, 163, 184, 0.3)';
+        const statusTag = inNucleus ? '✓ In Top-p' : '✗ Pruned';
+
+        html += `
+          <div class="prob-row">
+            <div class="prob-token">${item.token}</div>
+            <div class="prob-track">
+              <div class="prob-fill" style="width:${pct}%; background:${barColor}"></div>
+            </div>
+            <div class="prob-pct">${pct}%</div>
+            <span style="font-size:0.75rem; width:75px; color:${inNucleus ? '#10b981' : '#94a3b8'}">${statusTag}</span>
+          </div>
+        `;
+      });
+      document.getElementById('probBarsContainer').innerHTML = html;
+    }
+
+    function sampleNextToken() {
+      const temp = parseFloat(document.getElementById('tempRange').value);
+      const dist = computeProbs(temp);
+      let r = Math.random();
+      let chosen = dist[0].token;
+      for (const item of dist) {
+        if (r < item.prob) { chosen = item.token; break; }
+        r -= item.prob;
+      }
+      document.getElementById('sampledTokenResult').innerHTML =
+        `🎯 <strong>Sampled Token at T=${temp.toFixed(1)}:</strong> <span style="color:#38bdf8; font-size:1.05rem;">${chosen}</span><br>` +
+        `Completed sentence: <em>"The most important breakthrough in modern artificial intelligence is the ${chosen.replace(/"/g, '')}..."</em>`;
+    }
+
+    // ================= LAB 3: CHAT ROLE & MEMORY SIMULATOR =================
+    let currentPersona = 'json';
+
+    function setChatPersona(p, btn) {
+      currentPersona = p;
+      btn.parentElement.querySelectorAll('.ui-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateChatSim();
+    }
+
+    function updateChatSim() {
+      const turns = parseInt(document.getElementById('memSlider').value);
+      document.getElementById('memTurnsVal').textContent =
+        turns === 0 ? "0 Turns (Stateless Amnesia!)" : `${turns} Past Turns Included`;
+
+      const personas = {
+        json: {
+          sys: `You are a strict JSON API. Output valid JSON only. Never include conversational prose.`,
+          reply: `{\n  "user_name": "${turns > 0 ? 'Efe' : 'UNKNOWN_NO_MEMORY'}",\n  "recommended_action": "Use parameterized SQL queries",\n  "risk_level": "HIGH"\n}`
+        },
+        socratic: {
+          sys: `You are a Socratic University Professor. Never give the direct answer; ask guiding questions.`,
+          reply: `${turns > 0 ? 'Welcome back, Efe! ' : ''}Before we fix that SQL query, what do you think happens when raw user strings are concatenated directly into a SELECT statement?`
+        },
+        secops: {
+          sys: `You are a Principal SecOps Auditor. Identify CWE vulnerabilities concisely.`,
+          reply: `[ALERT CWE-89: SQL Injection] ${turns > 0 ? 'Context verified for user Efe. ' : 'Warning: No prior session state. '}Remediation: Replace string interpolation with prepared statements immediately.`
+        },
+        pirate: {
+          sys: `You are a 17th-century Pirate Captain teaching software engineering.`,
+          reply: `Ahoy ${turns > 0 ? 'Matey Efe' : 'Stranger'}! Ye never let scallywag user inputs board yer SQL ship without bind parameters, or yer database walks the plank!`
+        }
+      };
+
+      const data = personas[currentPersona];
+      const memoryNote = turns === 0
+        ? `<span style="color:#f43f5e">⚠️ Memory Window = 0: Prior turn ("My name is Efe") was dropped from the payload!</span>`
+        : `<span style="color:#10b981">✓ Memory Window = ${turns} turns: Prior context ("My name is Efe") preserved in messages array.</span>`;
+
+      document.getElementById('chatSimOutput').innerHTML =
+        `${memoryNote}<br><br>` +
+        `<span style="color:#38bdf8">[system]</span>: "${data.sys}"<br>` +
+        (turns > 0 ? `<span style="color:#94a3b8">[user (turn 1)]</span>: "Hi, my name is Efe and I'm building a web app."<br>` : '') +
+        `<span style="color:#f472b6">[user (current)]</span>: "How do I secure my database login query?"<br><br>` +
+        `<span style="color:#10b981">[assistant]</span>:\n${data.reply}`;
+    }
+
+    // ================= LAB 4: ARCHITECTURE COST/LATENCY SIMULATOR =================
+    let archCache = true;
+    let archSchema = true;
+
+    function toggleArchOpt(opt) {
+      if (opt === 'cache') {
+        archCache = !archCache;
+        document.getElementById('btnCache').classList.toggle('active', archCache);
+      } else {
+        archSchema = !archSchema;
+        document.getElementById('btnSchema').classList.toggle('active', archSchema);
+      }
+      updateArchSim();
+    }
+
+    function updateArchSim() {
+      const tier = parseInt(document.getElementById('modelTierSlider').value);
+      const reqs = parseInt(document.getElementById('reqSlider').value);
+      document.getElementById('reqCountLabel').textContent = `${reqs.toLocaleString()} req/day`;
+
+      const tierData = {
+        1: { name: "Nano Fast (8B)", baseLat: 160, costPer1k: 0.15 },
+        2: { name: "Mid-Tier Balanced (70B)", baseLat: 420, costPer1k: 1.40 },
+        3: { name: "Frontier Reasoning (400B+)", baseLat: 1150, costPer1k: 6.50 }
+      };
+
+      const info = tierData[tier];
+      document.getElementById('modelTierLabel').textContent = info.name;
+
+      let latency = archCache ? Math.round(info.baseLat * 0.65) : info.baseLat;
+      let dailyCost = (reqs / 1000) * info.costPer1k * (archCache ? 0.35 : 1.0);
+      let reliability = archSchema ? 99.9 : 84.5;
+
+      document.getElementById('latMeter').textContent = `${latency} ms`;
+      document.getElementById('costMeter').textContent = `$${dailyCost.toFixed(2)} / day`;
+      document.getElementById('relMeter').textContent = `${reliability}%`;
+    }
+
+    // ================= LAB 5: RAG CHUNKING SIMULATOR =================
+    function updateRagSim() {
+      const chunk = parseInt(document.getElementById('ragChunkSlider').value);
+      const overlap = parseInt(document.getElementById('ragOverlapSlider').value);
+      const topk = parseInt(document.getElementById('ragTopkSlider').value);
+
+      document.getElementById('ragChunkVal').textContent = `${chunk} Tokens`;
+      document.getElementById('ragOverlapVal').textContent = `${overlap}% Overlap`;
+      document.getElementById('ragTopkVal').textContent = `Top ${topk} Chunks`;
+
+      const totalInjectedTokens = chunk * topk;
+      let precision = "High (94%)";
+      let diagnosis = "Optimal sweet spot! Semantic vectors are sharp and paragraph boundaries are preserved by the overlap.";
+
+      if (chunk < 256 && overlap === 0) {
+        precision = "Medium-Low (68%)";
+        diagnosis = "Warning: Small chunks with 0% overlap slice sentences in half, losing contextual meaning.";
+      } else if (chunk > 1024) {
+        precision = "Diluted (74%)";
+        diagnosis = "Broad chunks mix multiple topics into a single embedding vector, reducing cosine search accuracy.";
+      }
+
+      document.getElementById('ragSimOutput').innerHTML =
+        `📊 <strong>Prompt Context Injected:</strong> ${totalInjectedTokens.toLocaleString()} tokens (${topk} chunks × ${chunk} tokens)<br>` +
+        `🎯 <strong>Estimated Retrieval Precision:</strong> <span style="color:#38bdf8">${precision}</span><br>` +
+        `💡 <strong>Pipeline Diagnosis:</strong> ${diagnosis}`;
+    }
+
+    // ================= LAB 6: INTERACTIVE QUIZ =================
+    const quizState = { 1: false, 2: false, 3: false };
+
+    function answerQuiz(qNum, isCorrect, btn) {
+      btn.parentElement.querySelectorAll('.ui-btn').forEach(b => {
+        b.style.borderColor = 'var(--border-color)';
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      quizState[qNum] = isCorrect;
+
+      const total = Object.values(quizState).filter(Boolean).length;
+      document.getElementById('quizScorePill').textContent = `Score: ${total} / 3`;
+
+      const fb = document.getElementById('quizFeedback');
+      if (total === 3) {
+        fb.innerHTML = `🏆 <strong style="color:#10b981">PERFECT SCORE (3/3)!</strong> You have mastered all 6 modules of the Prompt Engineering curriculum!`;
+      } else if (isCorrect) {
+        fb.innerHTML = `✅ <strong style="color:#10b981">Correct!</strong> Great understanding. Complete the remaining questions to reach 3/3.`;
+      } else {
+        fb.innerHTML = `❌ <strong style="color:#f43f5e">Not quite!</strong> Review the module concepts above and try another option.`;
       }
     }
 
-    // 2. Temperature Slider
-    const tempSlider = document.getElementById('tempSlider');
-    const tempVal = document.getElementById('tempVal');
-    const tempBox = document.getElementById('tempBox');
-
-    tempSlider.addEventListener('input', (e) => {
-      const v = parseFloat(e.target.value);
-      tempVal.textContent = v.toFixed(1);
-
-      if (v <= 0.3) {
-        tempBox.innerHTML = `<strong>Mode: High Determinism (T = ${v.toFixed(1)})</strong><br>Probabilities are sharply peaked. The top token is selected with near certainty. Ideal for code compilation, mathematical proofs, and JSON extraction.`;
-      } else if (v <= 0.8) {
-        tempBox.innerHTML = `<strong>Mode: Balanced Sampling (T = ${v.toFixed(1)})</strong><br>Balanced distribution. Maintains coherent reasoning while providing natural phrasing diversity. Standard for conversational agents.`;
-      } else {
-        tempBox.innerHTML = `<strong>Mode: High Entropy & Creativity (T = ${v.toFixed(1)})</strong><br>Flattened distribution curve. Higher probability assigned to tail tokens. High vocabulary diversity, but elevated hallucination risk.`;
-      }
-    });
-
-    // 3. Chat Rolleri
-    function setRole(role, btn) {
-      document.querySelectorAll('#lab-chat .btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const box = document.getElementById('roleBox');
-
-      if (role === 'assistant') {
-        box.innerHTML = `<code>[system]</code>: You are a helpful AI assistant.<br><code>[user]</code>: How do I filter users older than 21?<br><code>[assistant]</code>: In SQL, you can use the WHERE clause: <code>SELECT * FROM users WHERE age > 21;</code>`;
-      } else if (role === 'sql') {
-        box.innerHTML = `<code>[system]</code>: You are a strict database engine. Output pure SQL only without markdown or explanations.<br><code>[user]</code>: How do I filter users older than 21?<br><code>[assistant]</code>: <code>SELECT * FROM users WHERE age > 21;</code>`;
-      } else if (role === 'socratic') {
-        box.innerHTML = `<code>[system]</code>: You are a Socratic programming tutor. Never provide raw solutions; always ask guiding questions.<br><code>[user]</code>: How do I filter users older than 21?<br><code>[assistant]</code>: Which SQL clause do we use when we want to restrict records based on a specific boolean condition?`;
-      }
-    }
-
-    // 4. RAG Chunk Slider
-    const chunkSlider = document.getElementById('chunkSlider');
-    const chunkVal = document.getElementById('chunkVal');
-    const chunkBox = document.getElementById('chunkBox');
-
-    chunkSlider.addEventListener('input', (e) => {
-      const v = parseInt(e.target.value);
-      chunkVal.textContent = `${v} tkn`;
-
-      if (v <= 256) {
-        chunkBox.innerHTML = `<strong>Granular Chunks (${v} tokens)</strong><br>Pinpoint semantic precision. Embeddings are highly focused on specific sentences, reducing context noise. Risk: Context boundary cuts can split complex arguments.`;
-      } else if (v <= 768) {
-        chunkBox.innerHTML = `<strong>Optimal Sweet Spot (${v} tokens)</strong><br>Ideal compromise for technical manuals. Retains cohesive paragraphs and context while avoiding irrelevant token overhead.`;
-      } else {
-        chunkBox.innerHTML = `<strong>Broad Chunks (${v} tokens)</strong><br>Covers entire document sections or tables. However, vector embedding gets diluted across multiple concepts, lowering semantic search accuracy and driving up token costs.`;
-      }
-    });
-
-    // 5. Token Hesaplama Slider
-    const tokenSlider = document.getElementById('tokenSlider');
-    const tokenVal = document.getElementById('tokenVal');
-    const tokenBox = document.getElementById('tokenBox');
-
-    tokenSlider.addEventListener('input', (e) => {
-      const v = parseInt(e.target.value);
-      tokenVal.textContent = v.toLocaleString();
-      const dailyTokens = v * 1000;
-      const dailyCost = ((dailyTokens / 1000000) * 2.5).toFixed(2);
-
-      tokenBox.innerHTML = `<strong>Estimated Volume:</strong> ${dailyTokens.toLocaleString()} tokens/day<br><strong>Estimated Daily Cost (at $2.50 / 1M tokens):</strong> $${dailyCost} / day<br><em>Optimization tip: Utilize prompt caching to reduce token overhead by up to 80%.</em>`;
+    // Initialize all simulators on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      updatePromptBuilder();
+      updateSoftmax();
+      updateChatSim();
+      updateArchSim();
+      updateRagSim();
     });
   </script>
 </body>
