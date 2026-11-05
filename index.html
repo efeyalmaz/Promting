@@ -3,256 +3,384 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prompting & LLM Engineering Guide</title>
-  <meta property="og:title" content="Prompting & LLM Engineering Guide">
-  <meta property="og:description" content="Interactive guide and simulators exploring prompt engineering, LLM mechanics, and RAG architectures.">
+  <title>Prompt Engineering & LLM Mastery Lab</title>
+  <meta property="og:title" content="Prompt Engineering & LLM Mastery Lab">
+  <meta property="og:description" content="Comprehensive interactive handbook covering LLM architecture, prompt patterns, RAG pipelines, and live playground sliders.">
   <style>
     :root {
-      --bg: #0d1117;
-      --card-bg: #161b22;
-      --card-hover: #1c2128;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --heading: #f0f6fc;
-      --primary: #58a6ff;
-      --accent: #238636;
-      --sidebar-w: 280px;
+      --bg-dark: #0a0e14;
+      --card-bg: #111722;
+      --card-border: #1f293d;
+      --accent-blue: #38bdf8;
+      --accent-purple: #818cf8;
+      --accent-green: #34d399;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --code-bg: #030712;
+      --sidebar-width: 300px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
       display: flex;
       min-height: 100vh;
-      line-height: 1.6;
+      line-height: 1.65;
     }
-    nav {
-      width: var(--sidebar-w);
-      background: var(--card-bg);
-      border-right: 1px solid var(--border);
+
+    /* Sol Menü */
+    aside {
+      width: var(--sidebar-width);
+      background-color: var(--card-bg);
+      border-right: 1px solid var(--card-border);
       position: fixed;
       height: 100vh;
       overflow-y: auto;
       padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
-    nav h2 {
-      font-size: 1.1rem;
-      color: var(--heading);
-      margin-bottom: 1rem;
+    aside h2 {
+      font-size: 1.15rem;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--card-border);
     }
-    nav a {
-      display: block;
-      color: var(--text);
+    aside a {
+      color: var(--text-muted);
       text-decoration: none;
-      padding: 0.55rem 0.8rem;
+      padding: 0.55rem 0.75rem;
       border-radius: 6px;
       font-size: 0.9rem;
-      margin-bottom: 0.25rem;
-      transition: background 0.2s, color 0.2s;
-    }
-    nav a:hover {
-      background: rgba(88, 166, 255, 0.12);
-      color: var(--primary);
-    }
-    main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      padding: 2.5rem 3.5rem;
-      max-width: 950px;
-    }
-    header {
-      margin-bottom: 3rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    header h1 { font-size: 2.4rem; color: var(--heading); margin-bottom: 0.5rem; }
-    header p { font-size: 1.05rem; color: #8b949e; }
-    section {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.8rem 2rem;
-      margin-bottom: 2rem;
-    }
-    h2 { color: var(--heading); margin-bottom: 0.9rem; font-size: 1.45rem; }
-    p { margin-bottom: 0.9rem; }
-    code {
-      background: rgba(110, 118, 129, 0.35);
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 0.88em;
-    }
-
-    /* Interactive Demo Box Styles */
-    .interactive-card {
-      background: #0f141c;
-      border: 1px solid #3b434d;
-      border-radius: 6px;
-      padding: 1.25rem;
-      margin-top: 1.25rem;
-    }
-    .slider-container {
+      font-weight: 500;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin: 1rem 0;
+      gap: 0.5rem;
     }
-    .slider-container input[type="range"] {
-      flex: 1;
-      accent-color: var(--primary);
-      cursor: pointer;
-    }
-    .value-badge {
-      background: #21262d;
-      border: 1px solid var(--border);
-      padding: 0.2rem 0.6rem;
-      border-radius: 4px;
-      font-weight: 600;
-      color: var(--primary);
-      min-width: 45px;
-      text-align: center;
-    }
-    .output-box {
-      background: #161b22;
-      border-left: 3px solid var(--primary);
-      padding: 0.9rem;
-      border-radius: 0 4px 4px 0;
-      font-size: 0.92rem;
+    aside a:hover {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-blue);
+      transform: translateX(4px);
     }
 
-    @media (max-width: 768px) {
+    /* Ana İçerik Alanı */
+    main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 3rem 4rem;
+      max-width: 1000px;
+    }
+
+    header {
+      margin-bottom: 3.5rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.75rem;
+    }
+    header p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+    }
+
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2.2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    section h2 {
+      font-size: 1.6rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 0.75rem;
+    }
+    section h3 {
+      font-size: 1.2rem;
+      color: var(--accent-purple);
+      margin: 1.25rem 0 0.5rem 0;
+    }
+    p { margin-bottom: 1rem; color: #cbd5e1; }
+    ul { margin: 0 0 1.25rem 1.5rem; color: #cbd5e1; }
+    li { margin-bottom: 0.4rem; }
+
+    /* İnteraktif Kartlar & Bileşenler */
+    .interactive-card {
+      background: #080d16;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin: 1rem 0;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      height: 6px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+    .badge {
+      background: #1e293b;
+      border: 1px solid var(--card-border);
+      color: var(--accent-blue);
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      min-width: 60px;
+      text-align: center;
+      font-family: monospace;
+    }
+    .output-box {
+      background: var(--code-bg);
+      border-left: 4px solid var(--accent-blue);
+      padding: 1.1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      margin-top: 1rem;
+    }
+
+    /* İnteraktif Butonlar */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+    .btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #f1f5f9;
+      padding: 0.55rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .btn:hover {
+      background: var(--accent-blue);
+      color: #040914;
+      border-color: var(--accent-blue);
+    }
+    .btn.active {
+      background: var(--accent-purple);
+      color: #ffffff;
+      border-color: var(--accent-purple);
+    }
+
+    code {
+      background: rgba(148, 163, 184, 0.15);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      color: #38bdf8;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 850px) {
       body { flex-direction: column; }
-      nav { width: 100%; height: auto; position: static; }
+      aside { width: 100%; height: auto; position: static; }
       main { margin-left: 0; padding: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <nav>
-    <h2>Course Modules</h2>
-    <a href="#intro">01. Introduction</a>
-    <a href="#understanding">02. Understanding LLMs</a>
-    <a href="#temperature-demo">Interactive: Temperature</a>
-    <a href="#chat">03. Chat Models</a>
-    <a href="#designing">04. Designing Applications</a>
-    <a href="#rag">05. Prompts, Context & RAG</a>
-    <a href="#rag-demo">Interactive: RAG Chunks</a>
-    <a href="#workbook">06. Laboratory Workbook</a>
-  </nav>
 
+  <!-- Sol Menü -->
+  <aside>
+    <h2>Modules & Labs</h2>
+    <a href="#m01">01. Prompting Fundamentals</a>
+    <a href="#lab-shots">Live Lab: Zero vs Few-Shot</a>
+    <a href="#m02">02. LLM Architecture & Tokens</a>
+    <a href="#lab-temp">Interactive: Temperature ($T$)</a>
+    <a href="#m03">03. Chat Roles & History</a>
+    <a href="#lab-chat">Interactive: Role Simulation</a>
+    <a href="#m04">04. LLM System Design</a>
+    <a href="#m05">05. RAG & Vector Embeddings</a>
+    <a href="#lab-rag">Interactive: Chunk Sizing</a>
+    <a href="#m06">06. Prompt Evaluation Lab</a>
+  </aside>
+
+  <!-- Ana Doküman -->
   <main>
     <header>
-      <h1>Prompting & LLM Engineering</h1>
-      <p>Interactive guide and visual playgrounds based on course materials.</p>
+      <h1>Prompt Engineering & LLMs</h1>
+      <p>An interactive, full-spectrum masterclass on foundational language models, design pipelines, and context augmentation.</p>
     </header>
 
-    <section id="intro">
-      <h2>01. Introduction</h2>
-      <p>Covers fundamental prompting mechanics: system directives, role shaping, formatting instructions, and zero-shot vs few-shot paradigms.</p>
-    </section>
+    <!-- 01 INTRODUCTION -->
+    <section id="m01">
+      <h2>01. Prompting Fundamentals & Principles</h2>
+      <p>Prompt engineering is the systematic design and framing of inputs to guide Large Language Models (LLMs) toward precise, reliable, and deterministic behaviors. Effective prompts replace ambiguous user instructions with structured parameters, task descriptions, and explicit constraints.</p>
+      
+      <h3>Key Directives:</h3>
+      <ul>
+        <li><strong>Role Conditioning:</strong> Establish expertise domain immediately (e.g., <em>"Act as a Senior SecOps Engineer"</em>).</li>
+        <li><strong>Delimiter Isolation:</strong> Wrap raw inputs in triple backticks (<code>```</code>) or XML tags (<code>&lt;text&gt;</code>) to prevent prompt injection.</li>
+        <li><strong>Structured Formats:</strong> Request schemas such as JSON, Markdown tables, or CSV to guarantee machine-parseable responses.</li>
+      </ul>
 
-    <section id="understanding">
-      <h2>02. Understanding LLMs</h2>
-      <p>Explores transformer-based architecture, probability distributions over vocabularies, next-token prediction, and tokenization dynamics.</p>
-    </section>
-
-    <!-- Interactive Slider 1: Temperature -->
-    <section id="temperature-demo">
-      <h2>Interactive Demo: Sampling Temperature ($T$)</h2>
-      <p>Adjust the temperature slider below to see how model randomness and token selection behave between deterministic and creative modes.</p>
-
-      <div class="interactive-card">
-        <label for="tempRange"><strong>Temperature Setting:</strong></label>
-        <div class="slider-container">
-          <input type="range" id="tempRange" min="0" max="1" step="0.1" value="0.2">
-          <span class="value-badge" id="tempVal">0.2</span>
+      <!-- İnteraktif Lab: Prompt Stratejileri -->
+      <div class="interactive-card" id="lab-shots">
+        <h4>Interactive Experiment: Zero-Shot vs Few-Shot vs Chain-of-Thought</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Click the prompt strategies below to see how structured examples modify reasoning:</p>
+        <div class="btn-group">
+          <button class="btn active" onclick="setPromptMode('zero')">Zero-Shot</button>
+          <button class="btn" onclick="setPromptMode('few')">Few-Shot (In-Context Examples)</button>
+          <button class="btn" onclick="setPromptMode('cot')">Chain-of-Thought (CoT)</button>
         </div>
-        <div class="output-box" id="tempOutput">
-          <strong>Mode: Focused & Deterministic</strong><br>
-          Token probabilities are sharp. The model selects top tokens consistently, ideal for coding and factual Q&A.
-        </div>
-      </div>
-    </section>
-
-    <section id="chat">
-      <h2>03. Chat Models</h2>
-      <p>Conversation state handling, multi-turn contexts, role management (<code>system</code>, <code>user</code>, <code>assistant</code>), and session continuity.</p>
-    </section>
-
-    <section id="designing">
-      <h2>04. Designing LLM Applications</h2>
-      <p>Engineering production pipelines: structured outputs (JSON schema enforcement), chaining prompts, and validation layers.</p>
-    </section>
-
-    <section id="rag">
-      <h2>05. Prompts, Context and RAG</h2>
-      <p>Retrieval-Augmented Generation workflows: embedding spaces, vector database querying, dynamic context injection, and semantic indexing.</p>
-    </section>
-
-    <!-- Interactive Slider 2: RAG Chunk Size -->
-    <section id="rag-demo">
-      <h2>Interactive Demo: RAG Chunk Size & Context Trade-offs</h2>
-      <p>Slide to test chunk size strategies and see how semantic precision vs context completeness changes.</p>
-
-      <div class="interactive-card">
-        <label for="chunkRange"><strong>Chunk Size (Tokens):</strong></label>
-        <div class="slider-container">
-          <input type="range" id="chunkRange" min="128" max="1024" step="128" value="256">
-          <span class="value-badge" id="chunkVal">256</span>
-        </div>
-        <div class="output-box" id="chunkOutput">
-          <strong>Small Chunk (~256 tokens)</strong><br>
-          High semantic retrieval accuracy. Low chance of irrelevant context pollution, but higher risk of missing cross-paragraph context.
+        <div class="output-box" id="promptModeOutput">
+          <strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours.'"<br>
+          <strong>Output:</strong> Negative.<br>
+          <em>(Direct generation with zero prior context; depends entirely on model weights.)</em>
         </div>
       </div>
     </section>
 
-    <section id="workbook">
-      <h2>06. Laboratory Workbook</h2>
-      <p>Practical laboratory exercises, test benches, and repeatable prompt evaluation frameworks.</p>
+    <!-- 02 UNDERSTANDING LLMS -->
+    <section id="m02">
+      <h2>02. LLM Inner Mechanics & Hyperparameters</h2>
+      <p>Modern LLMs are autoregressive transformers trained on next-token prediction distributions. They do not retain explicit "knowledge" as a database does; instead, they output tokens based on contextual probability matrices $P(w_t \mid w_1, \dots, w_{t-1})$.</p>
+
+      <!-- İnteraktif Slider: Temperature -->
+      <div class="interactive-card" id="lab-temp">
+        <h4>Hyperparameter Simulator: Temperature ($T$) & Randomness</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Drag the slider to adjust softmax temperature and inspect token behavior:</p>
+        <div class="slider-row">
+          <label for="tempSlider"><strong>Temperature ($T$):</strong></label>
+          <input type="range" id="tempSlider" min="0" max="1.4" step="0.1" value="0.2">
+          <span class="badge" id="tempBadge">0.2</span>
+        </div>
+        <div class="output-box" id="tempExplanation">
+          <strong>Mode: High Determinism (Greedy Decoding)</strong><br>
+          Probabilities are sharply peaked. The model picks only the top token. Ideal for coding, regex generation, and mathematical validation.
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 CHAT MODELS & ROLES -->
+    <section id="m03">
+      <h2>03. Conversational State & Role Orchestration</h2>
+      <p>Unlike raw text-completion engines, chat models consume conversations as discrete serialized message arrays categorized by authority hierarchy:</p>
+      <ul>
+        <li><code>system</code>: Immutable instructions governing safety boundaries, persona, and output style.</li>
+        <li><code>user</code>: Dynamic prompts provided by the end-user.</li>
+        <li><code>assistant</code>: Prior responses synthesized by the model to maintain ongoing conversational state.</li>
+      </ul>
+
+      <!-- İnteraktif Lab: Chat Rolleri -->
+      <div class="interactive-card" id="lab-chat">
+        <h4>Role-Switching Sandbox</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Simulate role modifications in the message buffer:</p>
+        <div class="btn-group">
+          <button class="btn" onclick="setRole('standard')">Standard Assistant</button>
+          <button class="btn" onclick="setRole('sql')">Strict SQL Generator</button>
+          <button class="btn" onclick="setRole('tutor')">Socratic CS Tutor</button>
+        </div>
+        <div class="output-box" id="roleOutput">
+          <code>[system]</code>: You are a helpful AI assistant.<br>
+          <code>[user]</code>: How do I find all users above 25?<br>
+          <code>[assistant]</code>: You can use an SQL SELECT statement with a WHERE age &gt; 25 condition.
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 APPLICATION DESIGN -->
+    <section id="m04">
+      <h2>04. Production LLM System Design</h2>
+      <p>Building resilient enterprise software on top of non-deterministic models requires rigid engineering practices:</p>
+      <ul>
+        <li><strong>Schema Enforcement:</strong> Employing JSON Mode and Pydantic validation to prevent UI parse failures.</li>
+        <li><strong>Chained Pipelines:</strong> Breaking complex tasks into smaller discrete steps rather than relying on one massive prompt.</li>
+        <li><strong>Deterministic Fallbacks:</strong> Implementing retries with $T=0$ upon schema validation failure.</li>
+      </ul>
+    </section>
+
+    <!-- 05 PROMPTS, CONTEXT & RAG -->
+    <section id="m05">
+      <h2>05. Retrieval-Augmented Generation (RAG)</h2>
+      <p>RAG overcomes LLM training cutoffs and eliminates hallucinations by querying external knowledge stores. Documents are chunked, transformed into vector embeddings via models like <code>text-embedding-3-small</code>, and stored in vector indexes for similarity retrieval (Cosine Distance).</p>
+
+      <!-- İnteraktif Slider: RAG Chunk Size -->
+      <div class="interactive-card" id="lab-rag">
+        <h4>Interactive Optimization: Chunk Size Trade-offs</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Drag to test how chunking affects vector retrieval quality:</p>
+        <div class="slider-row">
+          <label for="chunkSlider"><strong>Chunk Size (Tokens):</strong></label>
+          <input type="range" id="chunkSlider" min="128" max="2048" step="128" value="256">
+          <span class="badge" id="chunkBadge">256</span>
+        </div>
+        <div class="output-box" id="chunkExplanation">
+          <strong>Small Granular Chunks (~256 tokens)</strong><br>
+          High semantic retrieval accuracy. Avoids irrelevant context pollution, but higher risk of truncating complex tabular data or cross-paragraph thoughts.
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 LABORATORY WORKBOOK -->
+    <section id="m06">
+      <h2>06. Laboratory Workbook & Evaluation Matrix</h2>
+      <p>Benchmark prompting efficiency against the four core evaluation pillars:</p>
+      <ul>
+        <li><strong>Accuracy & Factuality:</strong> Verifying zero factual hallucination against verified ground truth.</li>
+        <li><strong>Output Consistency:</strong> Measuring token variance across multiple consecutive requests.</li>
+        <li><strong>Context Window Efficiency:</strong> Minimizing prompt token overhead to reduce latency and API cost.</li>
+        <li><strong>Adversarial Robustness:</strong> Evaluating jailbreak resilience against jailbreak patterns and indirect injection.</li>
+      </ul>
     </section>
   </main>
 
+  <!-- JavaScript Mantığı -->
   <script>
-    // Temperature Interactive Logic
-    const tempRange = document.getElementById('tempRange');
-    const tempVal = document.getElementById('tempVal');
-    const tempOutput = document.getElementById('tempOutput');
+    // Prompt Modları (01)
+    function setPromptMode(mode) {
+      const out = document.getElementById('promptModeOutput');
+      if (mode === 'zero') {
+        out.innerHTML = `<strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours.'"<br><strong>Output:</strong> Negative.<br><em>(Direct generation with zero prior context; relies entirely on weights.)</em>`;
+      } else if (mode === 'few') {
+        out.innerHTML = `<strong>Prompt:</strong><br>Sentence: "The screen is vibrant." -> Sentiment: Positive<br>Sentence: "The device gets very hot." -> Sentiment: Negative<br>Sentence: "The battery lasted 2 hours." -><br><strong>Output:</strong> Negative.<br><em>(Few-shot examples anchor stylistic consistency.)</em>`;
+      } else if (mode === 'cot') {
+        out.innerHTML = `<strong>Prompt:</strong> "A laptop advertises 12h battery life. A user reports it lasted 2h. Is this satisfactory? Think step-by-step."<br><strong>Output:</strong> 1. Expected life is 12h. 2. Realized life is 2h (83% decrease). 3. Therefore, this is highly unsatisfactory.<br><em>(Chain-of-thought forces intermediate reasoning steps.)</em>`;
+      }
+    }
 
-    tempRange.addEventListener('input', (e) => {
+    // Temperature Slider (02)
+    const tempSlider = document.getElementById('tempSlider');
+    const tempBadge = document.getElementById('tempBadge');
+    const tempExplanation = document.getElementById('tempExplanation');
+
+    tempSlider.addEventListener('input', (e) => {
       const val = parseFloat(e.target.value);
-      tempVal.textContent = val.toFixed(1);
+      tempBadge.textContent = val.toFixed(1);
 
       if (val <= 0.3) {
-        tempOutput.innerHTML = `<strong>Deterministic Mode ($T = ${val.toFixed(1)}$):</strong><br>Greedy sampling. Highest probability token chosen repeatedly. Best for code, math, and JSON extraction.`;
-      } else if (val <= 0.7) {
-        tempOutput.innerHTML = `<strong>Balanced Mode ($T = ${val.toFixed(1)}$):</strong><br>Standard conversational balance. Good fluency, slight lexical diversity without going off-topic.`;
-      } else {
-        tempOutput.innerHTML = `<strong>Creative Mode ($T = ${val.toFixed(1)}$):</strong><br>Flattened distribution curve. Higher chance of tail tokens, yielding diverse vocabulary but elevated hallucination risk.`;
+        tempExplanation.innerHTML = `<strong>Mode: High Determinism (T = ${val.toFixed(1)})</strong><br>Peak token selection. Repetitive and factual. Best for SQL generation, code compilation, and structured JSON parsing.`;
+      } else if (val <= 0.8) {
+        tempExplanation.innerHTML = `<strong>Mode: Balanced Sampling (T = ${val.toFixed(1)})</strong><br>Standard balance of fluency and creative vocabulary. Recommended for general chatbot interactions, tutoring, and technical summaries.`;
       }
-    });
-
-    // RAG Chunk Size Interactive Logic
-    const chunkRange = document.getElementById('chunkRange');
-    const chunkVal = document.getElementById('chunkVal');
-    const chunkOutput = document.getElementById('chunkOutput');
-
-    chunkRange.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value);
-      chunkVal.textContent = val;
-
-      if (val <= 256) {
-        chunkOutput.innerHTML = `<strong>Granular Chunks (${val} tokens):</strong><br>Pinpoint vector lookup. High similarity scoring precision, though split sentences can lose situational context.`;
-      } else if (val <= 640) {
-        chunkOutput.innerHTML = `<strong>Standard Chunks (${val} tokens):</strong><br>Optimal sweet spot for most technical documentation. Balances contextual coherence and focused retrieval.`;
-      } else {
-        chunkOutput.innerHTML = `<strong>Broad Chunks (${val} tokens):</strong><br>Includes full sections and tables, but dilutes vector embeddings with multiple concepts, reducing search precision.`;
-      }
-    });
-  </script>
-</body>
-</html>
