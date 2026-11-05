@@ -5,208 +5,288 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prompt Engineering & LLM Mastery Lab</title>
   <meta property="og:title" content="Prompt Engineering & LLM Mastery Lab">
-  <meta property="og:description" content="Comprehensive interactive handbook covering LLM architecture, prompt patterns, RAG pipelines, and live playground sliders.">
+  <meta property="og:description" content="An elegant, interactive handbook exploring prompt engineering, LLM mechanics, and RAG architectures with live simulators.">
   <style>
     :root {
-      --bg-dark: #0a0e14;
-      --card-bg: #111722;
-      --card-border: #1f293d;
-      --accent-blue: #38bdf8;
-      --accent-purple: #818cf8;
-      --accent-green: #34d399;
-      --text-main: #f1f5f9;
+      --bg-gradient: radial-gradient(circle at 10% 20%, rgba(30, 27, 75, 0.7) 0%, rgba(10, 14, 26, 1) 90%);
+      --card-bg: rgba(22, 27, 46, 0.7);
+      --card-border: rgba(99, 102, 241, 0.25);
+      --card-hover: rgba(99, 102, 241, 0.4);
+      --primary-cyan: #38bdf8;
+      --primary-purple: #a855f7;
+      --primary-pink: #ec4899;
+      --primary-emerald: #10b981;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --code-bg: #030712;
-      --sidebar-width: 300px;
+      --code-bg: #090d16;
+      --sidebar-width: 320px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: var(--bg-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: #070a12;
+      background-image: var(--bg-gradient);
+      background-attachment: fixed;
       color: var(--text-main);
       display: flex;
       min-height: 100vh;
-      line-height: 1.65;
+      line-height: 1.7;
     }
 
-    /* Sol Menü */
+    /* Sol Menü - Glassmorphism */
     aside {
       width: var(--sidebar-width);
-      background-color: var(--card-bg);
+      background: rgba(13, 17, 30, 0.75);
+      backdrop-filter: blur(16px);
       border-right: 1px solid var(--card-border);
       position: fixed;
       height: 100vh;
       overflow-y: auto;
-      padding: 1.5rem 1rem;
+      padding: 2rem 1.2rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      z-index: 100;
     }
-    aside h2 {
-      font-size: 1.15rem;
-      color: var(--accent-blue);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.75rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--card-border);
-    }
-    aside a {
-      color: var(--text-muted);
-      text-decoration: none;
-      padding: 0.55rem 0.75rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
+
+    aside h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--primary-pink);
+      margin: 1rem 0 0.4rem 0.5rem;
+      font-weight: 700;
+    }
+
+    aside a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border: 1px solid transparent;
+    }
+
     aside a:hover {
-      background: rgba(56, 189, 248, 0.12);
-      color: var(--accent-blue);
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), rgba(168, 85, 247, 0.1));
+      color: var(--primary-cyan);
+      border-color: rgba(56, 189, 248, 0.3);
       transform: translateX(4px);
     }
 
-    /* Ana İçerik Alanı */
+    /* Ana İçerik */
     main {
       margin-left: var(--sidebar-width);
       flex: 1;
-      padding: 3rem 4rem;
-      max-width: 1000px;
+      padding: 3.5rem 5rem;
+      max-width: 1050px;
     }
 
     header {
       margin-bottom: 3.5rem;
       border-bottom: 1px solid var(--card-border);
-      padding-bottom: 2rem;
+      padding-bottom: 2.5rem;
     }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 0.3rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #c084fc;
+      margin-bottom: 1rem;
+    }
+
     header h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      font-size: 3.2rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #ec4899 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.75rem;
-    }
-    header p {
-      font-size: 1.15rem;
-      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+      line-height: 1.2;
     }
 
+    header p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 750px;
+    }
+
+    /* Kartlar */
     section {
       background: var(--card-bg);
+      backdrop-filter: blur(14px);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 2.2rem;
-      margin-bottom: 2.5rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      transition: border-color 0.3s ease;
     }
+
+    section:hover {
+      border-color: var(--card-hover);
+    }
+
     section h2 {
-      font-size: 1.6rem;
-      color: var(--text-main);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 1.25rem;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      padding-bottom: 0.75rem;
+      gap: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding-bottom: 0.8rem;
     }
-    section h3 {
-      font-size: 1.2rem;
-      color: var(--accent-purple);
-      margin: 1.25rem 0 0.5rem 0;
-    }
-    p { margin-bottom: 1rem; color: #cbd5e1; }
-    ul { margin: 0 0 1.25rem 1.5rem; color: #cbd5e1; }
-    li { margin-bottom: 0.4rem; }
 
-    /* İnteraktif Kartlar & Bileşenler */
-    .interactive-card {
-      background: #080d16;
-      border: 1px solid #2d3748;
-      border-radius: 10px;
-      padding: 1.5rem;
-      margin: 1.5rem 0;
+    section h3 {
+      font-size: 1.25rem;
+      color: var(--primary-cyan);
+      margin: 1.5rem 0 0.6rem 0;
     }
+
+    p { margin-bottom: 1.1rem; color: #cbd5e1; font-size: 1.02rem; }
+    ul { margin: 0 0 1.5rem 1.8rem; color: #cbd5e1; }
+    li { margin-bottom: 0.5rem; }
+
+    /* İnteraktif Simülatör Kartı */
+    .interactive-card {
+      background: linear-gradient(180deg, rgba(17, 24, 39, 0.8) 0%, rgba(9, 13, 22, 0.9) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 14px;
+      padding: 1.8rem;
+      margin: 1.75rem 0;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    .interactive-card h4 {
+      font-size: 1.15rem;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Slider Stilleri */
     .slider-row {
       display: flex;
       align-items: center;
-      gap: 1.2rem;
-      margin: 1rem 0;
-    }
-    .slider-row input[type="range"] {
-      flex: 1;
-      height: 6px;
-      accent-color: var(--accent-blue);
-      cursor: pointer;
-    }
-    .badge {
-      background: #1e293b;
-      border: 1px solid var(--card-border);
-      color: var(--accent-blue);
-      font-weight: 700;
-      padding: 0.25rem 0.75rem;
-      border-radius: 6px;
-      min-width: 60px;
-      text-align: center;
-      font-family: monospace;
-    }
-    .output-box {
-      background: var(--code-bg);
-      border-left: 4px solid var(--accent-blue);
-      padding: 1.1rem;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.95rem;
-      color: #e2e8f0;
-      margin-top: 1rem;
+      gap: 1.5rem;
+      margin: 1.2rem 0;
     }
 
-    /* İnteraktif Butonlar */
+    .slider-row input[type="range"] {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: #1e293b;
+      accent-color: var(--primary-purple);
+      cursor: pointer;
+    }
+
+    .badge-val {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+      border: 1px solid var(--primary-purple);
+      color: #e0e7ff;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+      min-width: 65px;
+      text-align: center;
+      font-family: monospace;
+      font-size: 1.05rem;
+    }
+
+    /* Çıktı Kutuları */
+    .output-box {
+      background: var(--code-bg);
+      border-left: 4px solid var(--primary-cyan);
+      border-radius: 0 10px 10px 0;
+      padding: 1.25rem;
+      margin-top: 1.2rem;
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* Buton Grupları */
     .btn-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      margin: 1rem 0;
+      gap: 0.8rem;
+      margin: 1.2rem 0;
     }
+
     .btn {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #f1f5f9;
-      padding: 0.55rem 1rem;
-      border-radius: 6px;
+      background: #1e2433;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #f8fafc;
+      padding: 0.65rem 1.2rem;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       font-weight: 600;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .btn:hover {
-      background: var(--accent-blue);
-      color: #040914;
-      border-color: var(--accent-blue);
+      background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
+      color: #050811;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
     }
+
     .btn.active {
-      background: var(--accent-purple);
+      background: linear-gradient(135deg, var(--primary-purple), var(--primary-pink));
       color: #ffffff;
-      border-color: var(--accent-purple);
+      border-color: transparent;
+      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
     }
 
     code {
       background: rgba(148, 163, 184, 0.15);
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      color: #38bdf8;
-      font-family: "Courier New", Courier, monospace;
-      font-size: 0.9em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 5px;
+      color: var(--primary-cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
     }
 
-    @media (max-width: 850px) {
+    @media (max-width: 900px) {
       body { flex-direction: column; }
-      aside { width: 100%; height: auto; position: static; }
-      main { margin-left: 0; padding: 1.5rem; }
+      aside { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--card-border); }
+      main { margin-left: 0; padding: 2rem 1.5rem; }
     }
   </style>
 </head>
@@ -214,173 +294,257 @@
 
   <!-- Sol Menü -->
   <aside>
-    <h2>Modules & Labs</h2>
-    <a href="#m01">01. Prompting Fundamentals</a>
-    <a href="#lab-shots">Live Lab: Zero vs Few-Shot</a>
+    <div class="brand-title">
+      <span>⚡</span> Prompt Engineering
+    </div>
+
+    <h3>Curriculum</h3>
+    <a href="#m01">01. Prompt Fundamentals</a>
     <a href="#m02">02. LLM Architecture & Tokens</a>
-    <a href="#lab-temp">Interactive: Temperature ($T$)</a>
     <a href="#m03">03. Chat Roles & History</a>
-    <a href="#lab-chat">Interactive: Role Simulation</a>
-    <a href="#m04">04. LLM System Design</a>
+    <a href="#m04">04. Application System Design</a>
     <a href="#m05">05. RAG & Vector Embeddings</a>
-    <a href="#lab-rag">Interactive: Chunk Sizing</a>
-    <a href="#m06">06. Prompt Evaluation Lab</a>
+    <a href="#m06">06. Prompt Evaluation Matrix</a>
+
+    <h3>Live Simulators</h3>
+    <a href="#lab-shots">🎯 Zero / Few-Shot Lab</a>
+    <a href="#lab-temp">🌡️ Temperature Slider</a>
+    <a href="#lab-chat">💬 Role Orchestrator</a>
+    <a href="#lab-rag">📦 RAG Chunk Sizing</a>
+    <a href="#lab-tokens">📊 Token & Cost Calculator</a>
   </aside>
 
-  <!-- Ana Doküman -->
+  <!-- Ana İçerik -->
   <main>
     <header>
-      <h1>Prompt Engineering & LLMs</h1>
-      <p>An interactive, full-spectrum masterclass on foundational language models, design pipelines, and context augmentation.</p>
+      <div class="badge-pill">Interactive Learning Platform</div>
+      <h1>Prompting & LLMs</h1>
+      <p>An elegant, research-backed engineering handbook exploring autoregressive foundations, context limits, and retrieval architectures.</p>
     </header>
 
-    <!-- 01 INTRODUCTION -->
+    <!-- MODULE 01 -->
     <section id="m01">
-      <h2>01. Prompting Fundamentals & Principles</h2>
-      <p>Prompt engineering is the systematic design and framing of inputs to guide Large Language Models (LLMs) toward precise, reliable, and deterministic behaviors. Effective prompts replace ambiguous user instructions with structured parameters, task descriptions, and explicit constraints.</p>
+      <h2>01. Prompt Fundamentals & Paradigms</h2>
+      <p>Prompt engineering is the disciplined process of structuring inputs to align large language models with desired deterministic outputs. Effective prompts replace ambiguous open-ended questions with explicit behavioral roles, constraints, and delimiter-fenced parameters.</p>
       
-      <h3>Key Directives:</h3>
+      <h3>Core Principles</h3>
       <ul>
-        <li><strong>Role Conditioning:</strong> Establish expertise domain immediately (e.g., <em>"Act as a Senior SecOps Engineer"</em>).</li>
-        <li><strong>Delimiter Isolation:</strong> Wrap raw inputs in triple backticks (<code>```</code>) or XML tags (<code>&lt;text&gt;</code>) to prevent prompt injection.</li>
-        <li><strong>Structured Formats:</strong> Request schemas such as JSON, Markdown tables, or CSV to guarantee machine-parseable responses.</li>
+        <li><strong>Role Conditioning:</strong> Prime the transformer weights with a strong persona (e.g., <em>"Act as a Principal Cloud Architect"</em>).</li>
+        <li><strong>Delimiter Isolation:</strong> Enclose user-generated variables in XML tags (<code>&lt;context&gt;</code>) or backticks (<code>```</code>) to defend against prompt injection attacks.</li>
+        <li><strong>Output Scaffolding:</strong> Specify output syntax explicitly (e.g., Markdown tables or strict JSON schemas) to ensure reliable downstream parsing.</li>
       </ul>
 
-      <!-- İnteraktif Lab: Prompt Stratejileri -->
+      <!-- SIMÜLATÖR 1: PROMPT STRATEJİLERİ -->
       <div class="interactive-card" id="lab-shots">
-        <h4>Interactive Experiment: Zero-Shot vs Few-Shot vs Chain-of-Thought</h4>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">Click the prompt strategies below to see how structured examples modify reasoning:</p>
+        <h4>🎯 Interactive Playground: Zero-Shot vs Few-Shot vs Chain-of-Thought</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Click below to evaluate how in-context demonstration alters model reasoning paths:</p>
+        
         <div class="btn-group">
-          <button class="btn active" onclick="setPromptMode('zero')">Zero-Shot</button>
-          <button class="btn" onclick="setPromptMode('few')">Few-Shot (In-Context Examples)</button>
-          <button class="btn" onclick="setPromptMode('cot')">Chain-of-Thought (CoT)</button>
+          <button class="btn active" onclick="setShot('zero', this)">Zero-Shot</button>
+          <button class="btn" onclick="setShot('few', this)">Few-Shot Demonstration</button>
+          <button class="btn" onclick="setShot('cot', this)">Chain-of-Thought (CoT)</button>
         </div>
-        <div class="output-box" id="promptModeOutput">
-          <strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours.'"<br>
+
+        <div class="output-box" id="shotBox">
+          <strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours on flight mode.'"<br>
           <strong>Output:</strong> Negative.<br>
-          <em>(Direct generation with zero prior context; depends entirely on model weights.)</em>
+          <span style="color: var(--primary-cyan); font-size: 0.85rem;">⚡ Mechanism: Direct generation with zero exemplars; entirely reliant on prior pre-training weights.</span>
         </div>
       </div>
     </section>
 
-    <!-- 02 UNDERSTANDING LLMS -->
+    <!-- MODULE 02 -->
     <section id="m02">
-      <h2>02. LLM Inner Mechanics & Hyperparameters</h2>
-      <p>Modern LLMs are autoregressive transformers trained on next-token prediction distributions. They do not retain explicit "knowledge" as a database does; instead, they output tokens based on contextual probability matrices $P(w_t \mid w_1, \dots, w_{t-1})$.</p>
+      <h2>02. LLM Architecture & Hyperparameters</h2>
+      <p>State-of-the-art LLMs are autoregressive decoder-only transformers. They operate by predicting token probability distributions: <code>P(w_t | w_1, ..., w_{t-1})</code>. They do not query a database; they perform statistical text generation conditioned on the prompt context.</p>
 
-      <!-- İnteraktif Slider: Temperature -->
+      <!-- SIMÜLATÖR 2: TEMPERATURE -->
       <div class="interactive-card" id="lab-temp">
-        <h4>Hyperparameter Simulator: Temperature ($T$) & Randomness</h4>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">Drag the slider to adjust softmax temperature and inspect token behavior:</p>
+        <h4>🌡️ Live Parameter Simulator: Temperature ($T$)</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Adjust temperature to see how the softmax probability curve influences creativity and risk:</p>
+        
         <div class="slider-row">
           <label for="tempSlider"><strong>Temperature ($T$):</strong></label>
           <input type="range" id="tempSlider" min="0" max="1.4" step="0.1" value="0.2">
-          <span class="badge" id="tempBadge">0.2</span>
+          <span class="badge-val" id="tempVal">0.2</span>
         </div>
-        <div class="output-box" id="tempExplanation">
-          <strong>Mode: High Determinism (Greedy Decoding)</strong><br>
-          Probabilities are sharply peaked. The model picks only the top token. Ideal for coding, regex generation, and mathematical validation.
+
+        <div class="output-box" id="tempBox">
+          <strong>Mode: High Determinism (Greedy Sampling)</strong><br>
+          Probabilities are sharply peaked. The top token is selected with near certainty. Ideal for code compilation, mathematical proofs, and JSON extraction.
         </div>
       </div>
     </section>
 
-    <!-- 03 CHAT MODELS & ROLES -->
+    <!-- MODULE 03 -->
     <section id="m03">
       <h2>03. Conversational State & Role Orchestration</h2>
-      <p>Unlike raw text-completion engines, chat models consume conversations as discrete serialized message arrays categorized by authority hierarchy:</p>
+      <p>Modern chat interfaces package conversation states into structured message arrays. The model evaluates interactions hierarchically across three standard roles:</p>
       <ul>
-        <li><code>system</code>: Immutable instructions governing safety boundaries, persona, and output style.</li>
-        <li><code>user</code>: Dynamic prompts provided by the end-user.</li>
-        <li><code>assistant</code>: Prior responses synthesized by the model to maintain ongoing conversational state.</li>
+        <li><code>system</code>: Authoritative directives that govern boundaries, safety guardrails, and tone.</li>
+        <li><code>user</code>: Dynamic instructions or requests submitted by the operator.</li>
+        <li><code>assistant</code>: Synthetic responses generated in previous conversational turns.</li>
       </ul>
 
-      <!-- İnteraktif Lab: Chat Rolleri -->
+      <!-- SIMÜLATÖR 3: ROLE ORCHESTRATOR -->
       <div class="interactive-card" id="lab-chat">
-        <h4>Role-Switching Sandbox</h4>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">Simulate role modifications in the message buffer:</p>
+        <h4>💬 System Role Sandbox</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Switch the system role to inspect how persona steering transforms the response to the same query:</p>
+        
         <div class="btn-group">
-          <button class="btn" onclick="setRole('standard')">Standard Assistant</button>
-          <button class="btn" onclick="setRole('sql')">Strict SQL Generator</button>
-          <button class="btn" onclick="setRole('tutor')">Socratic CS Tutor</button>
+          <button class="btn active" onclick="setRole('assistant', this)">Default Assistant</button>
+          <button class="btn" onclick="setRole('sql', this)">Strict SQL Engine</button>
+          <button class="btn" onclick="setRole('socratic', this)">Socratic Tutor</button>
         </div>
-        <div class="output-box" id="roleOutput">
+
+        <div class="output-box" id="roleBox">
           <code>[system]</code>: You are a helpful AI assistant.<br>
-          <code>[user]</code>: How do I find all users above 25?<br>
-          <code>[assistant]</code>: You can use an SQL SELECT statement with a WHERE age &gt; 25 condition.
+          <code>[user]</code>: How do I filter users older than 21?<br>
+          <code>[assistant]</code>: In SQL, you can use the WHERE clause: <code>SELECT * FROM users WHERE age > 21;</code>
         </div>
       </div>
     </section>
 
-    <!-- 04 APPLICATION DESIGN -->
+    <!-- MODULE 04 -->
     <section id="m04">
       <h2>04. Production LLM System Design</h2>
-      <p>Building resilient enterprise software on top of non-deterministic models requires rigid engineering practices:</p>
+      <p>Moving from single prompts to production-grade applications requires treating the language model as a probabilistic execution component surrounded by deterministic software engineering practices:</p>
       <ul>
-        <li><strong>Schema Enforcement:</strong> Employing JSON Mode and Pydantic validation to prevent UI parse failures.</li>
-        <li><strong>Chained Pipelines:</strong> Breaking complex tasks into smaller discrete steps rather than relying on one massive prompt.</li>
-        <li><strong>Deterministic Fallbacks:</strong> Implementing retries with $T=0$ upon schema validation failure.</li>
+        <li><strong>Schema Enforcement:</strong> Using JSON Mode or tools like Pydantic/Instructor to validate shapes.</li>
+        <li><strong>Step Decomposition:</strong> Splitting complex reasoning into sequential prompt chains.</li>
+        <li><strong>Fallback Routing:</strong> Catching parse errors and retrying with low-temperature deterministic parameters.</li>
       </ul>
     </section>
 
-    <!-- 05 PROMPTS, CONTEXT & RAG -->
+    <!-- MODULE 05 -->
     <section id="m05">
       <h2>05. Retrieval-Augmented Generation (RAG)</h2>
-      <p>RAG overcomes LLM training cutoffs and eliminates hallucinations by querying external knowledge stores. Documents are chunked, transformed into vector embeddings via models like <code>text-embedding-3-small</code>, and stored in vector indexes for similarity retrieval (Cosine Distance).</p>
+      <p>RAG connects LLMs to external, up-to-date knowledge repositories without fine-tuning. Unstructured documents are divided into text chunks, embedded into dense vector coordinates using models like <code>text-embedding-3-small</code>, and matched via Cosine Similarity against incoming user queries.</p>
 
-      <!-- İnteraktif Slider: RAG Chunk Size -->
+      <!-- SIMÜLATÖR 4: CHUNK SIZING -->
       <div class="interactive-card" id="lab-rag">
-        <h4>Interactive Optimization: Chunk Size Trade-offs</h4>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">Drag to test how chunking affects vector retrieval quality:</p>
+        <h4>📦 RAG Chunk Size & Context Trade-offs</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Slide to balance vector granularity against contextual breadth:</p>
+
         <div class="slider-row">
-          <label for="chunkSlider"><strong>Chunk Size (Tokens):</strong></label>
+          <label for="chunkSlider"><strong>Chunk Size:</strong></label>
           <input type="range" id="chunkSlider" min="128" max="2048" step="128" value="256">
-          <span class="badge" id="chunkBadge">256</span>
+          <span class="badge-val" id="chunkVal">256 tkn</span>
         </div>
-        <div class="output-box" id="chunkExplanation">
-          <strong>Small Granular Chunks (~256 tokens)</strong><br>
-          High semantic retrieval accuracy. Avoids irrelevant context pollution, but higher risk of truncating complex tabular data or cross-paragraph thoughts.
+
+        <div class="output-box" id="chunkBox">
+          <strong>Granular Chunks (256 tokens)</strong><br>
+          Pinpoint semantic precision. Embeddings are highly focused on specific sentences, reducing context noise. Risk: Context boundary cuts can split complex arguments.
         </div>
       </div>
     </section>
 
-    <!-- 06 LABORATORY WORKBOOK -->
+    <!-- MODULE 06 -->
     <section id="m06">
-      <h2>06. Laboratory Workbook & Evaluation Matrix</h2>
-      <p>Benchmark prompting efficiency against the four core evaluation pillars:</p>
-      <ul>
-        <li><strong>Accuracy & Factuality:</strong> Verifying zero factual hallucination against verified ground truth.</li>
-        <li><strong>Output Consistency:</strong> Measuring token variance across multiple consecutive requests.</li>
-        <li><strong>Context Window Efficiency:</strong> Minimizing prompt token overhead to reduce latency and API cost.</li>
-        <li><strong>Adversarial Robustness:</strong> Evaluating jailbreak resilience against jailbreak patterns and indirect injection.</li>
-      </ul>
+      <h2>06. Laboratory Workbook & Token Economics</h2>
+      <p>Systematic evaluation is required to deploy LLMs safely and cost-effectively. Key metrics include Hallucination Rate, Latency to First Token (TTFT), and Context Cost.</p>
+
+      <!-- SIMÜLATÖR 5: TOKEN CALCULATOR -->
+      <div class="interactive-card" id="lab-tokens">
+        <h4>📊 Interactive Token & Cost Estimator</h4>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Simulate estimated tokens and API cost for a 1,000-user daily application:</p>
+
+        <div class="slider-row">
+          <label for="tokenSlider"><strong>Context Length (Tokens/req):</strong></label>
+          <input type="range" id="tokenSlider" min="500" max="16000" step="500" value="2000">
+          <span class="badge-val" id="tokenVal">2,000</span>
+        </div>
+
+        <div class="output-box" id="tokenBox">
+          <strong>Estimated Volume:</strong> 2,000,000 tokens/day<br>
+          <strong>Estimated Daily Cost (at $2.50 / 1M tokens):</strong> $5.00 / day<br>
+          <em>Optimization tip: Utilize prompt caching to reduce token overhead by up to 80%.</em>
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- JavaScript Mantığı -->
+  <!-- Script Mantığı -->
   <script>
-    // Prompt Modları (01)
-    function setPromptMode(mode) {
-      const out = document.getElementById('promptModeOutput');
+    // 1. Prompt Stratejileri
+    function setShot(mode, btn) {
+      document.querySelectorAll('#lab-shots .btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const box = document.getElementById('shotBox');
+
       if (mode === 'zero') {
-        out.innerHTML = `<strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours.'"<br><strong>Output:</strong> Negative.<br><em>(Direct generation with zero prior context; relies entirely on weights.)</em>`;
+        box.innerHTML = `<strong>Prompt:</strong> "Classify sentiment: 'The battery lasted 2 hours on flight mode.'"<br><strong>Output:</strong> Negative.<br><span style="color: var(--primary-cyan); font-size: 0.85rem;">⚡ Mechanism: Direct generation with zero exemplars; entirely reliant on prior pre-training weights.</span>`;
       } else if (mode === 'few') {
-        out.innerHTML = `<strong>Prompt:</strong><br>Sentence: "The screen is vibrant." -> Sentiment: Positive<br>Sentence: "The device gets very hot." -> Sentiment: Negative<br>Sentence: "The battery lasted 2 hours." -><br><strong>Output:</strong> Negative.<br><em>(Few-shot examples anchor stylistic consistency.)</em>`;
+        box.innerHTML = `<strong>Prompt:</strong><br>Review: 'Ultra fast shipping!' -> Positive<br>Review: 'Flimsy build quality.' -> Negative<br>Review: 'The battery lasted 2 hours on flight mode.' -><br><strong>Output:</strong> Negative.<br><span style="color: var(--primary-emerald); font-size: 0.85rem;">⚡ Mechanism: In-context examples guide output formatting and tone consistency.</span>`;
       } else if (mode === 'cot') {
-        out.innerHTML = `<strong>Prompt:</strong> "A laptop advertises 12h battery life. A user reports it lasted 2h. Is this satisfactory? Think step-by-step."<br><strong>Output:</strong> 1. Expected life is 12h. 2. Realized life is 2h (83% decrease). 3. Therefore, this is highly unsatisfactory.<br><em>(Chain-of-thought forces intermediate reasoning steps.)</em>`;
+        box.innerHTML = `<strong>Prompt:</strong> "The battery advertises 12h but lasted 2h. Analyze satisfaction step-by-step."<br><strong>Output:</strong> 1. Expected duration: 12 hours.<br>2. Measured duration: 2 hours (83.3% loss).<br>3. Conclusion: Highly defective performance.<br><span style="color: var(--primary-purple); font-size: 0.85rem;">⚡ Mechanism: Chain-of-Thought expands computational space for token generation before conclusion.</span>`;
       }
     }
 
-    // Temperature Slider (02)
+    // 2. Temperature Slider
     const tempSlider = document.getElementById('tempSlider');
-    const tempBadge = document.getElementById('tempBadge');
-    const tempExplanation = document.getElementById('tempExplanation');
+    const tempVal = document.getElementById('tempVal');
+    const tempBox = document.getElementById('tempBox');
 
     tempSlider.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
-      tempBadge.textContent = val.toFixed(1);
+      const v = parseFloat(e.target.value);
+      tempVal.textContent = v.toFixed(1);
 
-      if (val <= 0.3) {
-        tempExplanation.innerHTML = `<strong>Mode: High Determinism (T = ${val.toFixed(1)})</strong><br>Peak token selection. Repetitive and factual. Best for SQL generation, code compilation, and structured JSON parsing.`;
-      } else if (val <= 0.8) {
-        tempExplanation.innerHTML = `<strong>Mode: Balanced Sampling (T = ${val.toFixed(1)})</strong><br>Standard balance of fluency and creative vocabulary. Recommended for general chatbot interactions, tutoring, and technical summaries.`;
+      if (v <= 0.3) {
+        tempBox.innerHTML = `<strong>Mode: High Determinism (T = ${v.toFixed(1)})</strong><br>Probabilities are sharply peaked. The top token is selected with near certainty. Ideal for code compilation, mathematical proofs, and JSON extraction.`;
+      } else if (v <= 0.8) {
+        tempBox.innerHTML = `<strong>Mode: Balanced Sampling (T = ${v.toFixed(1)})</strong><br>Balanced distribution. Maintains coherent reasoning while providing natural phrasing diversity. Standard for conversational agents.`;
+      } else {
+        tempBox.innerHTML = `<strong>Mode: High Entropy & Creativity (T = ${v.toFixed(1)})</strong><br>Flattened distribution curve. Higher probability assigned to tail tokens. High vocabulary diversity, but elevated hallucination risk.`;
       }
+    });
+
+    // 3. Chat Rolleri
+    function setRole(role, btn) {
+      document.querySelectorAll('#lab-chat .btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const box = document.getElementById('roleBox');
+
+      if (role === 'assistant') {
+        box.innerHTML = `<code>[system]</code>: You are a helpful AI assistant.<br><code>[user]</code>: How do I filter users older than 21?<br><code>[assistant]</code>: In SQL, you can use the WHERE clause: <code>SELECT * FROM users WHERE age > 21;</code>`;
+      } else if (role === 'sql') {
+        box.innerHTML = `<code>[system]</code>: You are a strict database engine. Output pure SQL only without markdown or explanations.<br><code>[user]</code>: How do I filter users older than 21?<br><code>[assistant]</code>: <code>SELECT * FROM users WHERE age > 21;</code>`;
+      } else if (role === 'socratic') {
+        box.innerHTML = `<code>[system]</code>: You are a Socratic programming tutor. Never provide raw solutions; always ask guiding questions.<br><code>[user]</code>: How do I filter users older than 21?<br><code>[assistant]</code>: Which SQL clause do we use when we want to restrict records based on a specific boolean condition?`;
+      }
+    }
+
+    // 4. RAG Chunk Slider
+    const chunkSlider = document.getElementById('chunkSlider');
+    const chunkVal = document.getElementById('chunkVal');
+    const chunkBox = document.getElementById('chunkBox');
+
+    chunkSlider.addEventListener('input', (e) => {
+      const v = parseInt(e.target.value);
+      chunkVal.textContent = `${v} tkn`;
+
+      if (v <= 256) {
+        chunkBox.innerHTML = `<strong>Granular Chunks (${v} tokens)</strong><br>Pinpoint semantic precision. Embeddings are highly focused on specific sentences, reducing context noise. Risk: Context boundary cuts can split complex arguments.`;
+      } else if (v <= 768) {
+        chunkBox.innerHTML = `<strong>Optimal Sweet Spot (${v} tokens)</strong><br>Ideal compromise for technical manuals. Retains cohesive paragraphs and context while avoiding irrelevant token overhead.`;
+      } else {
+        chunkBox.innerHTML = `<strong>Broad Chunks (${v} tokens)</strong><br>Covers entire document sections or tables. However, vector embedding gets diluted across multiple concepts, lowering semantic search accuracy and driving up token costs.`;
+      }
+    });
+
+    // 5. Token Hesaplama Slider
+    const tokenSlider = document.getElementById('tokenSlider');
+    const tokenVal = document.getElementById('tokenVal');
+    const tokenBox = document.getElementById('tokenBox');
+
+    tokenSlider.addEventListener('input', (e) => {
+      const v = parseInt(e.target.value);
+      tokenVal.textContent = v.toLocaleString();
+      const dailyTokens = v * 1000;
+      const dailyCost = ((dailyTokens / 1000000) * 2.5).toFixed(2);
+
+      tokenBox.innerHTML = `<strong>Estimated Volume:</strong> ${dailyTokens.toLocaleString()} tokens/day<br><strong>Estimated Daily Cost (at $2.50 / 1M tokens):</strong> $${dailyCost} / day<br><em>Optimization tip: Utilize prompt caching to reduce token overhead by up to 80%.</em>`;
+    });
+  </script>
+</body>
+</html>
